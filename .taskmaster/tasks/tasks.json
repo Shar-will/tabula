@@ -99,7 +99,7 @@
               "2.2"
             ],
             "details": "Create index.html for the new tab override, referencing the main JS/TS bundle. Scaffold background.js (or .ts) for the service worker. Ensure file paths match those referenced in manifest.json. Use minimal boilerplate code to confirm loading.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Load the extension and verify that the new tab page displays index.html and the background service worker is registered."
           },
           {
@@ -110,7 +110,7 @@
               "2.3"
             ],
             "details": "Configure chrome_url_overrides in manifest.json to point to the custom index.html. Test that opening a new tab displays the extension's page instead of the default Chrome new tab.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Open a new tab in Chrome and confirm the custom page loads. Check for any errors or missing assets."
           },
           {
@@ -1056,7 +1056,7 @@
     ],
     "metadata": {
       "created": "2025-07-29T00:35:37.652Z",
-      "updated": "2025-07-29T08:44:47.199Z",
+      "updated": "2025-07-29T08:47:50.251Z",
       "description": "Tasks for master context"
     }
   }

@@ -11,25 +11,25 @@ Write manifest.json with name, version, permissions (tabs, storage, activeTab), 
 Load extension in Chrome (Developer Mode). Confirm new tab override and permissions are recognized.
 
 # Subtasks:
-## 1. Draft manifest.json with Required Fields and Permissions [pending]
+## 1. Draft manifest.json with Required Fields and Permissions [done]
 ### Dependencies: None
 ### Description: Create the manifest.json file specifying the extension's name, version, manifest_version (3), required permissions (tabs, storage, activeTab), background service worker, and new tab override.
 ### Details:
 Define the manifest.json structure according to Chrome Manifest V3 specification. Include fields: name, version, manifest_version: 3, permissions: ["tabs", "storage", "activeTab"], background with service_worker entry, and chrome_url_overrides for newtab. Ensure all required fields are present and valid.
 
-## 2. Configure Content Security Policy (CSP) in manifest.json [pending]
+## 2. Configure Content Security Policy (CSP) in manifest.json [done]
 ### Dependencies: 2.1
 ### Description: Set the extension's Content Security Policy to restrict script and object sources as required.
 ### Details:
 Add the 'content_security_policy' key to manifest.json with the value: {"extension_pages": "script-src 'self'; object-src 'self'"}. Ensure this CSP applies to all extension pages and complies with Manifest V3 requirements.
 
-## 3. Scaffold Extension Entry Points: index.html and Main JS/TS Files [pending]
+## 3. Scaffold Extension Entry Points: index.html and Main JS/TS Files [done]
 ### Dependencies: 2.1, 2.2
 ### Description: Create the primary HTML and JavaScript/TypeScript files that serve as entry points for the extension's UI and background logic.
 ### Details:
 Create index.html for the new tab override, referencing the main JS/TS bundle. Scaffold background.js (or .ts) for the service worker. Ensure file paths match those referenced in manifest.json. Use minimal boilerplate code to confirm loading.
 
-## 4. Implement New Tab Override Functionality [pending]
+## 4. Implement New Tab Override Functionality [done]
 ### Dependencies: 2.3
 ### Description: Ensure the extension correctly overrides the browser's new tab page with the custom index.html.
 ### Details:
