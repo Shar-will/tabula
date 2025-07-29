@@ -35,7 +35,7 @@
             "description": "Adjust Vite configuration to output static files suitable for Chrome Extension development, including correct base path and output directory.",
             "dependencies": [],
             "details": "Set `base: './'` in `vite.config.js` to ensure relative asset paths. Configure the build output directory as `dist`. Ensure the build process copies static assets from `public` to `dist`. Prepare for multiple entry points if needed (popup, background, content scripts).",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Build the project and verify that all assets are correctly output to the `dist` directory with relative paths."
           },
           {
@@ -44,7 +44,7 @@
             "description": "Organize the project for Chrome Extension development, including `public`, `src`, and a Manifest V3-compliant `manifest.json`.",
             "dependencies": [],
             "details": "Create a `public/manifest.json` file with Manifest V3 fields: name, version, permissions, background service worker, and action popup. Organize `src` for popup, background, and content scripts. Ensure static files (icons, etc.) are in `public`. Reference the correct HTML and JS files in the manifest.",
-            "status": "pending",
+            "status": "in-progress",
             "testStrategy": "Build the project, load the extension in Chrome (Developer Mode), and verify the extension appears with correct metadata and structure."
           },
           {
@@ -1056,7 +1056,7 @@
     ],
     "metadata": {
       "created": "2025-07-29T00:35:37.652Z",
-      "updated": "2025-07-29T01:39:28.724Z",
+      "updated": "2025-07-29T02:45:29.809Z",
       "description": "Tasks for master context"
     }
   }

@@ -1,0 +1,28 @@
+{
+    "manifest_version": 3,
+    "name": "Tabula",
+    "version": "1.0.0",
+    "description": "A chrome extension to manage your tabs",
+    "default_locale": "en",
+    "permissions": ["tabs", "storage", "activeTab"],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "action": {
+        "default_popup": "popup.html",
+        "default_icon": {
+            "16": "assets/icon16.png",
+            "48": "assets/icon48.png",
+            "128": "assets/icon128.png"
+        },
+        "default_title": "Tabula"
+    },
+    "chrome_url_overrides": {
+        "newtab": "index.html"
+    },
+    "icons": {
+        "16": "assets/icon16.png",
+        "48": "assets/icon48.png",
+        "128": "assets/icon128.png"
+    }
+}
