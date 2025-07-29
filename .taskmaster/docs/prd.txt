@@ -1,0 +1,335 @@
+# Tabula - Chrome Extension Product Requirements Document
+
+## Project Overview
+
+**Product Name:** Tabula
+**Project Type:** Chrome Extension
+**Priority:** HIGH
+**Version:** 1.0
+
+### Product Description
+Tabula is a Chrome extension that replaces the default new tab page with a comprehensive tab management system featuring drag-and-drop functionality, workspace organization, and tab grouping capabilities.
+
+### Target Audience
+- Power users who work with many browser tabs
+- Productivity-focused professionals
+- Students and researchers
+
+### Business Objectives
+- Create Tabula as an open-source alternative to TabExtend
+- Improve user productivity through better tab management
+- Provide a seamless tab organization experience
+
+### Key Differentiators
+- Open source and free
+- No user accounts required
+- Full offline functionality using IndexedDB
+- Smooth animations and modern UI
+
+## Technical Requirements
+
+### Technology Stack
+- **Frontend Framework:** React 18+
+- **Build Tool:** Vite
+- **Styling:** Tailwind CSS
+- **UI Components:** shadcn/ui
+- **Animations:** Framer Motion
+- **Drag & Drop:** react-dnd or @dnd-kit/core
+- **Storage:** IndexedDB (primary), Chrome APIs (chrome.tabs, chrome.storage)
+
+### Chrome Extension Configuration
+- **Manifest Version:** 3
+- **Permissions:** tabs, storage, activeTab
+- **Chrome URL Overrides:** newtab: index.html
+- **Content Security Policy:** script-src 'self'; object-src 'self'
+
+### Performance Requirements
+- Initial load time: < 1 second
+- Drag & drop response: < 100ms
+- Workspace switch time: < 500ms
+- Tab update frequency: Real-time on tab events
+
+## Design System
+
+### Typography
+- Font Family: Inter
+- Letter Spacing: -4%
+- Weights: 400 (regular), 500 (medium), 600 (semibold), 700 (bold)
+
+### Color Palette
+- Highlight: #447EFC
+- Black: #232529
+- White: #FCFDFF
+- White v2: #F4F8FF
+- Border: #E5E7EB
+- Less Black: #E5E7EB
+- Barely Gray: #9CA1AA
+
+### Favicon Styling
+- Container: Circular frame
+- Padding: 5px all sides
+- Border: 1px solid #E5E7EB
+- Background: transparent
+
+### Animations
+- Easing: cubic-bezier
+- Library: Framer Motion
+
+## Functional Requirements
+
+### Core Features
+
+#### F001: Recent Tabs Sidebar
+**Priority:** HIGH
+**Description:** Collapsible sidebar showing currently open browser tabs
+
+**User Stories:**
+- As a user, I want to see all my currently open tabs in a sidebar so I can easily access them
+- As a user, I want the sidebar to collapse on hover-out showing only favicons to save screen space
+
+**Acceptance Criteria:**
+- Sidebar fetches open tabs using Chrome tabs API
+- Sidebar shows tab title (truncated to 15 chars) and favicon
+- Sidebar collapses on hover-out to show only favicons with frames
+- Sidebar expands on hover-in to show full tab information
+- Real-time updates when tabs are opened/closed/switched
+
+**Technical Details:**
+- Chrome API: chrome.tabs.query, chrome.tabs.onUpdated, chrome.tabs.onCreated, chrome.tabs.onRemoved
+- Collapsed width: 60px
+- Expanded width: 280px
+
+#### F002: Canvas with Tab Groups
+**Priority:** HIGH
+**Description:** Main area displaying tab groups with horizontal scrolling
+
+**User Stories:**
+- As a user, I want to see my tab groups on a canvas so I can organize my tabs visually
+- As a user, I want to scroll horizontally through my tab groups when they exceed screen width
+
+**Acceptance Criteria:**
+- Canvas displays all tab groups for current workspace
+- Canvas is horizontally scrollable
+- Tab groups span full width of available space
+- Visual drop zones appear when dragging tabs
+
+#### F003: Tab Groups
+**Priority:** HIGH
+**Description:** Containers for organizing related tabs
+
+**User Stories:**
+- As a user, I want to create tab groups so I can organize related tabs together
+- As a user, I want to customize tab group names and icons
+
+**Acceptance Criteria:**
+- Tab groups have editable headers with name and icon
+- Icons are selectable from Lucide React library
+- Tab count is displayed and clickable to open all tabs
+- Context menu appears on hover with sort/duplicate/delete/archive options
+- Groups can be archived or deleted
+- Drag and drop support for reordering tabs within groups
+
+**Context Menu Options:**
+- Sort by alphabetical order
+- Sort by date added
+- Duplicate group
+- Delete group
+- Archive group
+
+#### F004: Drag and Drop System
+**Priority:** HIGH
+**Description:** Comprehensive drag and drop functionality
+
+**User Stories:**
+- As a user, I want to drag tabs from sidebar to groups to organize them
+- As a user, I want visual feedback when dragging to know where I can drop
+
+**Acceptance Criteria:**
+- Tabs can be dragged from sidebar to existing groups
+- Tabs can be dragged from sidebar to canvas to create new groups
+- Tabs can be dragged between groups
+- Tabs can be reordered within groups
+- Visual line indicator shows drop zones
+- Drop zone highlighting for entire drop area
+
+**Drag Scenarios:**
+- Recent tabs sidebar → existing tab group
+- Recent tabs sidebar → canvas (creates new group)
+- Tab from one group → another group
+- Tab within same group (reordering)
+- Tab from group → canvas (creates new group)
+
+#### F005: Workspace Management
+**Priority:** MEDIUM
+**Description:** Multiple workspace system for different contexts
+
+**User Stories:**
+- As a user, I want multiple workspaces so I can separate work and personal tabs
+- As a user, I want to switch between workspaces quickly
+
+**Acceptance Criteria:**
+- Workspace bar at top of interface
+- Default workspace created on first use
+- Maximum 10 workspaces allowed
+- Workspace switching with slide animation
+- Auto-save workspace state on switch
+- Remember last active workspace on return
+
+#### F006: Tab Management
+**Priority:** HIGH
+**Description:** Individual tab handling and display
+
+**User Stories:**
+- As a user, I want to click on tabs to open them in the current window
+- As a user, I want to see tab titles and favicons clearly
+
+**Acceptance Criteria:**
+- Tab titles truncated to 15 characters
+- Favicons displayed in circular frames with 5px padding
+- Clicking tab opens URL in current tab (not new tab)
+- Tabs are draggable within and between groups
+- URL validation and cleanup for dead links
+
+#### F007: Data Persistence
+**Priority:** HIGH
+**Description:** Local storage using IndexedDB
+
+**User Stories:**
+- As a user, I want my tab organization to persist between browser sessions
+- As a user, I want to recover accidentally deleted items
+
+**Acceptance Criteria:**
+- All data stored in IndexedDB
+- Tab URLs, favicons, group names, workspace names stored
+- Tab order and group organization preserved
+- Recently deleted section with 14-day retention
+- Archive functionality for groups and tabs
+- State restoration on extension load
+
+**IndexedDB Schema:**
+- workspaces: id, name, isDefault, createdAt, lastAccessed
+- tabGroups: id, workspaceId, name, icon, position, isArchived, createdAt
+- tabs: id, groupId, url, title, favicon, position, isArchived, createdAt
+- deletedItems: id, type, data, deletedAt, originalLocation
+
+#### F008: Archive and Delete System
+**Priority:** MEDIUM
+**Description:** System for archiving and deleting tab groups and tabs
+
+**User Stories:**
+- As a user, I want to archive tab groups to hide them without losing them
+- As a user, I want to recover accidentally deleted items
+
+**Acceptance Criteria:**
+- Archive functionality for individual tabs and entire groups
+- Archived items hidden from main canvas but stored in database
+- Recently deleted section accessible from settings/menu
+- 14-day retention for deleted items before permanent deletion
+- Restore functionality for both archived and deleted items
+
+## User Interface Specifications
+
+### Layout
+- **Recent Tabs Sidebar:** Left position, 60px collapsed/280px expanded
+- **Workspace Bar:** Top position, 48px height, max 10 tabs
+- **Main Canvas:** Center-right area, horizontal scroll, 20px padding
+
+### Tab Group Structure
+- **Header:** Editable name, Lucide React icon, tab count
+- **Body:** List of tabs with favicons and titles
+- **Footer:** Archive button, delete button, context menu
+
+### Interactions
+- **Drag Feedback:** Visual line indicator, drop zone highlighting
+- **Hover States:** Context menu icon, tooltips, sidebar expand/collapse
+- **Click Behaviors:** Open URL in current tab, open all tabs in group, switch workspace
+
+## Non-Functional Requirements
+
+### Performance
+- Initial load: < 1 second
+- Drag response: < 100ms
+- Workspace switch: < 500ms with animation
+- Memory usage: optimized for large tab collections
+- Real-time updates: immediate on Chrome tab events
+
+### Usability
+- Drag & drop: intuitive with clear visual feedback
+- Responsive design: works on different screen sizes
+- Accessibility: keyboard navigation support
+- Error handling: graceful degradation with user-friendly messages
+
+### Reliability
+- Data persistence: robust IndexedDB operations with error handling
+- Chrome API failures: graceful handling of API limitations
+- State recovery: automatic recovery from corrupted data
+
+### Security
+- Permissions: minimal required Chrome permissions only
+- Data storage: local IndexedDB only, no external requests
+- Privacy: no user tracking or analytics
+
+## Data Limits
+- Max workspaces: 10
+- Max tabs per group: 500
+- Max total tabs: 10,000
+- Deleted items retention: 14 days
+
+## Development Phases
+
+### Phase 1: Foundation (1 week)
+- Chrome extension boilerplate with Manifest V3
+- New tab override functionality
+- Basic React + Vite + Tailwind setup
+- IndexedDB connection and basic schema
+
+### Phase 2: Tab Integration (1 week)
+- Recent tabs sidebar with Chrome API integration
+- Real-time tab updates (open/close/switch)
+- Basic tab display with favicons and titles
+- Sidebar collapse/expand functionality
+
+### Phase 3: Canvas & Groups (2 weeks)
+- Main canvas with horizontal scrolling
+- Tab group creation and display
+- Editable group names and icons
+- Basic IndexedDB CRUD operations for groups
+
+### Phase 4: Drag & Drop (2 weeks)
+- Complete drag and drop implementation
+- Visual feedback and drop zones
+- All drag scenarios (sidebar to group, group to group, etc.)
+- Tab reordering within groups
+
+### Phase 5: Workspaces (1 week)
+- Workspace bar and switching
+- Multiple workspace support (max 10)
+- Workspace state persistence
+- Slide animation for workspace switching
+
+### Phase 6: Advanced Features (1.5 weeks)
+- Archive and delete system
+- Recently deleted with 14-day retention
+- Context menus for tab groups
+- URL validation and cleanup
+- Tab count click-to-open-all
+
+### Phase 7: Polish (1 week)
+- Framer Motion animations with cubic-bezier
+- Performance optimization
+- Error handling and edge cases
+- Final UI polish and testing
+
+## Success Metrics
+
+### Technical Metrics
+- Extension load time < 1 second
+- Drag operation response < 100ms
+- Zero data loss during state transitions
+- Successful Chrome Web Store approval
+
+### User Experience Metrics
+- Intuitive drag and drop without user confusion
+- Smooth animations and transitions
+- Reliable data persistence
+- Positive user feedback on GitHub 

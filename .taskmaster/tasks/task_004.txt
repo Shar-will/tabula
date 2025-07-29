@@ -1,0 +1,43 @@
+# Task ID: 4
+# Title: Develop Recent Tabs Sidebar with Real-Time Chrome Tabs API Integration
+# Status: pending
+# Dependencies: 2, 3
+# Priority: high
+# Description: Build collapsible sidebar that displays open tabs using Chrome tabs API, with real-time updates and hover-based expand/collapse.
+# Details:
+Use chrome.tabs.query, chrome.tabs.onUpdated, chrome.tabs.onCreated, chrome.tabs.onRemoved to fetch and update tab list. Implement sidebar with 60px collapsed and 280px expanded widths. Show truncated tab titles and favicons in circular frames. Animate expand/collapse on hover.
+
+# Test Strategy:
+Open/close/switch tabs in Chrome and verify sidebar updates instantly. Test hover-in/out for expand/collapse. Validate UI against design specs.
+
+# Subtasks:
+## 1. Set Up Sidebar Component Structure and Styling [pending]
+### Dependencies: None
+### Description: Create the collapsible sidebar UI component with base structure, collapsed (60px) and expanded (280px) widths, and hover-based expand/collapse animation.
+### Details:
+Implement a sidebar React component (or equivalent) with CSS transitions for width. Use state to track expanded/collapsed status. Add event handlers for mouse enter/leave to trigger expand/collapse. Ensure the sidebar overlays or docks as per design. Style the sidebar background, border, and shadow according to UI specs.
+
+## 2. Integrate Chrome Tabs API for Initial Tab Fetch [pending]
+### Dependencies: 4.1
+### Description: Fetch the current list of open tabs using chrome.tabs.query and display them in the sidebar.
+### Details:
+Request 'tabs' permission in manifest.json if not already present. Use chrome.tabs.query({windowId: chrome.windows.WINDOW_ID_CURRENT}, callback) to retrieve all tabs in the current window. Store the tab list in component state. Render each tab with its favicon (in a circular frame) and a truncated title. Ensure the sidebar displays the full list on initial load.
+
+## 3. Implement Real-Time Tab List Updates via Chrome Tabs Events [pending]
+### Dependencies: 4.2
+### Description: Listen for chrome.tabs.onCreated, onUpdated, and onRemoved events to update the sidebar in real time as tabs change.
+### Details:
+Register event listeners for chrome.tabs.onCreated, chrome.tabs.onUpdated, and chrome.tabs.onRemoved in the background or sidebar script. On each event, update the tab list state by re-querying tabs or updating the affected tab entry. Ensure updates are debounced or batched if necessary for performance.
+
+## 4. Enhance Tab Item UI with Truncated Titles and Circular Favicons [pending]
+### Dependencies: 4.3
+### Description: Refine the tab list UI to display favicons in circular frames and truncate tab titles to fit within the sidebar layout.
+### Details:
+Apply CSS to render each favicon inside a circular container (e.g., border-radius: 50%). Truncate tab titles with ellipsis if they exceed available width. Ensure alignment and spacing match design requirements. Add tooltips to show full tab titles on hover if needed.
+
+## 5. Finalize Sidebar Accessibility and Edge Case Handling [pending]
+### Dependencies: 4.4
+### Description: Ensure the sidebar is accessible, handles edge cases (e.g., no tabs, many tabs), and meets keyboard navigation requirements.
+### Details:
+Add ARIA roles and labels for sidebar and tab items. Support keyboard navigation for expand/collapse and tab selection. Handle cases where there are zero tabs or a very large number of tabs (e.g., add scroll or pagination). Test for responsiveness and performance with many tabs.
+

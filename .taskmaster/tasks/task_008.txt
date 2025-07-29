@@ -1,0 +1,43 @@
+# Task ID: 8
+# Title: Implement Workspace Management Bar and Switching
+# Status: pending
+# Dependencies: 3, 5
+# Priority: medium
+# Description: Create workspace bar at top with max 10 workspaces, slide animation for switching, and auto-save/restore of workspace state.
+# Details:
+Render workspace tabs (max 10) with 48px height. Default workspace on first use. Animate switching with Framer Motion. Persist workspace state in IndexedDB. Remember last active workspace.
+
+# Test Strategy:
+Create, switch, and delete workspaces. Verify state persistence and animation. Test workspace limits and restoration on reload.
+
+# Subtasks:
+## 1. Render Workspace Bar with Tab Limit and Default Workspace [pending]
+### Dependencies: None
+### Description: Implement the top workspace bar UI, enforcing a maximum of 10 workspaces, each as a tab with 48px height. Ensure a default workspace is created and selected on first use.
+### Details:
+Create a React component for the workspace bar. Render up to 10 workspace tabs, each styled to 48px height. On initial load, check if any workspaces exist; if not, create and select a default workspace. Disable or hide the 'add workspace' button when 10 workspaces exist.
+
+## 2. Implement Workspace Switching with Slide Animation [pending]
+### Dependencies: 8.1
+### Description: Enable switching between workspaces via tab clicks, using Framer Motion to animate the transition with a slide effect.
+### Details:
+Integrate Framer Motion into the workspace bar component. On tab click, trigger a slide animation to transition between workspace contents. Ensure animation direction reflects navigation (e.g., left/right). Maintain smooth performance for up to 10 workspaces.
+
+## 3. Persist Workspace State in IndexedDB [pending]
+### Dependencies: 8.1
+### Description: Save all workspace data, including tab groups and tabs, to IndexedDB using the established persistence layer. Ensure all changes are auto-saved.
+### Details:
+Use the IndexedDB schema from Task 3 to store workspace objects. On any workspace modification (add, rename, delete, reorder), update the database. Implement auto-save on relevant state changes. Use idb or Dexie.js for database operations.
+
+## 4. Restore Workspace State and Last Active Workspace on Load [pending]
+### Dependencies: 8.3
+### Description: On application startup, load all workspaces from IndexedDB and restore the last active workspace as the selected tab.
+### Details:
+On app initialization, fetch workspace data from IndexedDB. Restore the workspace bar and select the last active workspace (tracked in storage). If no workspaces exist, fall back to creating the default workspace. Ensure UI state matches persisted data.
+
+## 5. Handle Workspace Deletion and Tab Reassignment [pending]
+### Dependencies: 8.1, 8.3, 8.4
+### Description: Allow users to delete workspaces, ensuring that tabs/groups are handled appropriately and the UI updates. If the active workspace is deleted, switch to a valid remaining workspace.
+### Details:
+Implement workspace deletion logic. On delete, remove the workspace from IndexedDB and update the workspace bar. If the deleted workspace was active, select the next available workspace (preferably the one to the left, or right if none left). Ensure no orphaned tabs/groups remain.
+

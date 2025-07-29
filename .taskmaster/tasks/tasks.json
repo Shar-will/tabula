@@ -1,0 +1,1063 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Initialize Chrome Extension Project with React, Vite, and Tailwind",
+        "description": "Set up the project repository with React 18+, Vite, Tailwind CSS, and shadcn/ui, configured for Chrome Extension development.",
+        "details": "Create a new Vite project with React template. Integrate Tailwind CSS and shadcn/ui. Configure Vite for Chrome Extension output. Set up project structure for extension (public, src, manifest.json). Ensure compatibility with Manifest V3. Add Framer Motion and react-dnd/@dnd-kit/core as dependencies.",
+        "testStrategy": "Verify project builds successfully. Confirm Tailwind and shadcn/ui styles render. Ensure dev server runs and outputs static files suitable for Chrome extension.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "in-progress",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Initialize Vite Project with React 18+",
+            "description": "Create a new Vite project using the React template, ensuring React 18+ is used, and set up the initial repository structure.",
+            "dependencies": [],
+            "details": "Run `npx create-vite@latest` and select the React template. Choose TypeScript if desired. Ensure React version is 18 or higher in package.json. Initialize a git repository and make the first commit. Organize the project with `src` and `public` directories.\n<info added on 2025-07-29T01:34:31.010Z>\n✅ COMPLETED: Successfully initialized Vite project with React 19.1.0\n\nWhat was accomplished:\n- Created Vite project using React template (React 19.1.0 - exceeds React 18+ requirement)\n- Installed all dependencies successfully (152 packages, 0 vulnerabilities)\n- Verified dev server starts correctly and serves React app\n- Updated package.json with correct project name \"tabula\" and version \"1.0.0\"\n- Preserved existing Taskmaster setup and .env files\n\nProject structure created:\n- src/ directory with App.jsx, main.jsx, index.css, App.css\n- public/ directory for static assets\n- package.json with React 19.1.0 and Vite 7.0.4\n- vite.config.js for build configuration\n- eslint.config.js for linting\n\nTest results:\n- npm run dev starts successfully\n- React app loads at http://localhost:5173\n- All dependencies installed without errors\n- Project structure matches Vite React template standards\n\nReady to proceed to next subtask: Integrate Tailwind CSS and shadcn/ui\n</info added on 2025-07-29T01:34:31.010Z>",
+            "status": "done",
+            "testStrategy": "Run `npm run dev` or `bun run dev` to verify the React app starts and displays the default Vite page."
+          },
+          {
+            "id": 2,
+            "title": "Integrate Tailwind CSS and shadcn/ui",
+            "description": "Add Tailwind CSS and shadcn/ui to the project, configuring Tailwind for JIT mode and setting up base styles.",
+            "dependencies": [],
+            "details": "Install Tailwind CSS and its peer dependencies. Run `npx tailwindcss init -p` to generate config files. Update `tailwind.config.js` to include all relevant file paths. Add Tailwind directives to the main CSS file. Install shadcn/ui and follow its setup instructions to ensure components and styles are available.\n<info added on 2025-07-29T01:39:25.592Z>\nSuccessfully integrated Tailwind CSS v4 and shadcn/ui with a custom color palette and theming system. Set up PostCSS and Autoprefixer, configured Tailwind and shadcn/ui design tokens, and established import aliases for cleaner imports. Added utility functions (clsx, tailwind-merge) and verified that Tailwind classes, shadcn/ui components, and theming work as expected in the development environment. Project structure now includes updated configuration files and demo usage of Tailwind and shadcn/ui in App.jsx.\n</info added on 2025-07-29T01:39:25.592Z>",
+            "status": "done",
+            "testStrategy": "Add a sample component using Tailwind and shadcn/ui styles. Confirm styles render correctly in the browser."
+          },
+          {
+            "id": 3,
+            "title": "Configure Vite for Chrome Extension Output",
+            "description": "Adjust Vite configuration to output static files suitable for Chrome Extension development, including correct base path and output directory.",
+            "dependencies": [],
+            "details": "Set `base: './'` in `vite.config.js` to ensure relative asset paths. Configure the build output directory as `dist`. Ensure the build process copies static assets from `public` to `dist`. Prepare for multiple entry points if needed (popup, background, content scripts).",
+            "status": "pending",
+            "testStrategy": "Build the project and verify that all assets are correctly output to the `dist` directory with relative paths."
+          },
+          {
+            "id": 4,
+            "title": "Set Up Chrome Extension Project Structure and Manifest V3",
+            "description": "Organize the project for Chrome Extension development, including `public`, `src`, and a Manifest V3-compliant `manifest.json`.",
+            "dependencies": [],
+            "details": "Create a `public/manifest.json` file with Manifest V3 fields: name, version, permissions, background service worker, and action popup. Organize `src` for popup, background, and content scripts. Ensure static files (icons, etc.) are in `public`. Reference the correct HTML and JS files in the manifest.",
+            "status": "pending",
+            "testStrategy": "Build the project, load the extension in Chrome (Developer Mode), and verify the extension appears with correct metadata and structure."
+          },
+          {
+            "id": 5,
+            "title": "Install and Configure Framer Motion and Drag-and-Drop Libraries",
+            "description": "Add Framer Motion and react-dnd/@dnd-kit/core as dependencies, and verify their integration with the React project.",
+            "dependencies": [],
+            "details": "Install Framer Motion and either react-dnd or @dnd-kit/core via npm or bun. Add a sample animated component and a basic drag-and-drop example to the project. Ensure these libraries work with the existing React and Tailwind setup.",
+            "status": "pending",
+            "testStrategy": "Render a test component using Framer Motion and a simple drag-and-drop interaction. Confirm both work as expected in the extension popup."
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Create Manifest V3 and Chrome Extension Boilerplate",
+        "description": "Develop manifest.json with required permissions, new tab override, and CSP. Scaffold extension entry points.",
+        "details": "Write manifest.json with name, version, permissions (tabs, storage, activeTab), background service worker, and newtab override. Set CSP to 'script-src 'self'; object-src 'self''. Scaffold index.html and entry JS/TS files.",
+        "testStrategy": "Load extension in Chrome (Developer Mode). Confirm new tab override and permissions are recognized.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Draft manifest.json with Required Fields and Permissions",
+            "description": "Create the manifest.json file specifying the extension's name, version, manifest_version (3), required permissions (tabs, storage, activeTab), background service worker, and new tab override.",
+            "dependencies": [],
+            "details": "Define the manifest.json structure according to Chrome Manifest V3 specification. Include fields: name, version, manifest_version: 3, permissions: [\"tabs\", \"storage\", \"activeTab\"], background with service_worker entry, and chrome_url_overrides for newtab. Ensure all required fields are present and valid.",
+            "status": "pending",
+            "testStrategy": "Validate manifest.json using Chrome's extension loader. Confirm all fields are recognized and no errors are reported."
+          },
+          {
+            "id": 2,
+            "title": "Configure Content Security Policy (CSP) in manifest.json",
+            "description": "Set the extension's Content Security Policy to restrict script and object sources as required.",
+            "dependencies": [
+              "2.1"
+            ],
+            "details": "Add the 'content_security_policy' key to manifest.json with the value: {\"extension_pages\": \"script-src 'self'; object-src 'self'\"}. Ensure this CSP applies to all extension pages and complies with Manifest V3 requirements.",
+            "status": "pending",
+            "testStrategy": "Load the extension and check the console for CSP violations. Attempt to inject inline scripts to verify CSP enforcement."
+          },
+          {
+            "id": 3,
+            "title": "Scaffold Extension Entry Points: index.html and Main JS/TS Files",
+            "description": "Create the primary HTML and JavaScript/TypeScript files that serve as entry points for the extension's UI and background logic.",
+            "dependencies": [
+              "2.1",
+              "2.2"
+            ],
+            "details": "Create index.html for the new tab override, referencing the main JS/TS bundle. Scaffold background.js (or .ts) for the service worker. Ensure file paths match those referenced in manifest.json. Use minimal boilerplate code to confirm loading.",
+            "status": "pending",
+            "testStrategy": "Load the extension and verify that the new tab page displays index.html and the background service worker is registered."
+          },
+          {
+            "id": 4,
+            "title": "Implement New Tab Override Functionality",
+            "description": "Ensure the extension correctly overrides the browser's new tab page with the custom index.html.",
+            "dependencies": [
+              "2.3"
+            ],
+            "details": "Configure chrome_url_overrides in manifest.json to point to the custom index.html. Test that opening a new tab displays the extension's page instead of the default Chrome new tab.",
+            "status": "pending",
+            "testStrategy": "Open a new tab in Chrome and confirm the custom page loads. Check for any errors or missing assets."
+          },
+          {
+            "id": 5,
+            "title": "Verify and Document Boilerplate Setup",
+            "description": "Test the extension in Chrome, verify all boilerplate components function as intended, and document the setup for future development.",
+            "dependencies": [
+              "2.4"
+            ],
+            "details": "Load the extension in Chrome (Developer Mode). Confirm manifest fields, permissions, CSP, new tab override, and entry points work as expected. Create a README or setup notes summarizing the boilerplate structure and usage.",
+            "status": "pending",
+            "testStrategy": "Perform end-to-end manual testing of all features. Review documentation for completeness and clarity."
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Implement IndexedDB Schema and Persistence Layer",
+        "description": "Set up IndexedDB using idb or Dexie.js for local storage of workspaces, tab groups, tabs, and deleted items.",
+        "details": "Define schema: workspaces, tabGroups, tabs, deletedItems. Implement CRUD operations and data migration logic. Ensure all data is stored locally and supports offline use.",
+        "testStrategy": "Write unit tests for CRUD operations. Simulate offline mode and verify data persistence and restoration.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define IndexedDB Schema for All Data Entities",
+            "description": "Design and declare the IndexedDB schema with object stores for workspaces, tabGroups, tabs, and deletedItems, including appropriate key paths and indexes.",
+            "dependencies": [],
+            "details": "Use idb or Dexie.js to define object stores for each entity. Assign unique key paths (e.g., 'id') and create necessary indexes for efficient querying. Ensure the schema is normalized to reduce redundancy and supports future migrations. Increment the database version number for schema changes and implement all schema modifications within the onupgradeneeded event handler.",
+            "status": "pending",
+            "testStrategy": "Verify object stores and indexes are created as expected by inspecting the database structure after initialization."
+          },
+          {
+            "id": 2,
+            "title": "Implement CRUD Operations for Each Object Store",
+            "description": "Develop create, read, update, and delete operations for workspaces, tabGroups, tabs, and deletedItems using the chosen IndexedDB wrapper.",
+            "dependencies": [
+              "3.1"
+            ],
+            "details": "For each object store, implement functions to add, retrieve (by key and by index), update, and delete records. Use transactions with appropriate modes ('readonly' or 'readwrite') and handle errors using event handlers. Ensure all operations are asynchronous and return Promises.",
+            "status": "pending",
+            "testStrategy": "Write unit tests for each CRUD function, including edge cases such as updating non-existent records and deleting items."
+          },
+          {
+            "id": 3,
+            "title": "Implement Data Migration Logic for Schema Evolution",
+            "description": "Add logic to handle schema upgrades and data migrations when the database version changes, ensuring backward compatibility and data integrity.",
+            "dependencies": [
+              "3.1",
+              "3.2"
+            ],
+            "details": "Within the onupgradeneeded event, detect the oldVersion and apply conditional migration steps for each version increment. Migrate or transform existing data as needed to fit the new schema. Test migration paths from all supported previous versions.",
+            "status": "pending",
+            "testStrategy": "Simulate upgrades from older database versions and verify that all data is correctly migrated and accessible."
+          },
+          {
+            "id": 4,
+            "title": "Integrate Persistence Layer with Offline Support",
+            "description": "Ensure all CRUD operations and data access work seamlessly offline, and that the persistence layer is robust against connectivity changes.",
+            "dependencies": [
+              "3.2",
+              "3.3"
+            ],
+            "details": "Test and handle scenarios where the application is offline, ensuring all data operations are queued or handled locally. Use IndexedDB's offline-first capabilities to guarantee data is always available. Implement error handling for failed transactions and provide graceful degradation if storage is unavailable.",
+            "status": "pending",
+            "testStrategy": "Simulate offline mode and verify that all operations succeed and data remains consistent. Test recovery when connectivity is restored."
+          },
+          {
+            "id": 5,
+            "title": "Write Comprehensive Unit Tests for Persistence Layer",
+            "description": "Develop and execute unit tests covering all CRUD operations, migrations, and offline scenarios for the IndexedDB persistence layer.",
+            "dependencies": [
+              "3.2",
+              "3.3",
+              "3.4"
+            ],
+            "details": "Use a testing framework to mock IndexedDB and simulate various scenarios, including normal operations, migrations, and offline/online transitions. Validate data integrity, error handling, and transaction completion. Ensure tests are repeatable and cover all edge cases.",
+            "status": "pending",
+            "testStrategy": "Run automated tests in CI and manually verify data persistence and restoration in development and offline environments."
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Develop Recent Tabs Sidebar with Real-Time Chrome Tabs API Integration",
+        "description": "Build collapsible sidebar that displays open tabs using Chrome tabs API, with real-time updates and hover-based expand/collapse.",
+        "details": "Use chrome.tabs.query, chrome.tabs.onUpdated, chrome.tabs.onCreated, chrome.tabs.onRemoved to fetch and update tab list. Implement sidebar with 60px collapsed and 280px expanded widths. Show truncated tab titles and favicons in circular frames. Animate expand/collapse on hover.",
+        "testStrategy": "Open/close/switch tabs in Chrome and verify sidebar updates instantly. Test hover-in/out for expand/collapse. Validate UI against design specs.",
+        "priority": "high",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set Up Sidebar Component Structure and Styling",
+            "description": "Create the collapsible sidebar UI component with base structure, collapsed (60px) and expanded (280px) widths, and hover-based expand/collapse animation.",
+            "dependencies": [],
+            "details": "Implement a sidebar React component (or equivalent) with CSS transitions for width. Use state to track expanded/collapsed status. Add event handlers for mouse enter/leave to trigger expand/collapse. Ensure the sidebar overlays or docks as per design. Style the sidebar background, border, and shadow according to UI specs.",
+            "status": "pending",
+            "testStrategy": "Manually hover over the sidebar to verify smooth expand/collapse animation and correct width changes. Compare with design specifications."
+          },
+          {
+            "id": 2,
+            "title": "Integrate Chrome Tabs API for Initial Tab Fetch",
+            "description": "Fetch the current list of open tabs using chrome.tabs.query and display them in the sidebar.",
+            "dependencies": [
+              "4.1"
+            ],
+            "details": "Request 'tabs' permission in manifest.json if not already present. Use chrome.tabs.query({windowId: chrome.windows.WINDOW_ID_CURRENT}, callback) to retrieve all tabs in the current window. Store the tab list in component state. Render each tab with its favicon (in a circular frame) and a truncated title. Ensure the sidebar displays the full list on initial load.",
+            "status": "pending",
+            "testStrategy": "Open multiple tabs in Chrome and verify that all are listed in the sidebar with correct favicons and truncated titles."
+          },
+          {
+            "id": 3,
+            "title": "Implement Real-Time Tab List Updates via Chrome Tabs Events",
+            "description": "Listen for chrome.tabs.onCreated, onUpdated, and onRemoved events to update the sidebar in real time as tabs change.",
+            "dependencies": [
+              "4.2"
+            ],
+            "details": "Register event listeners for chrome.tabs.onCreated, chrome.tabs.onUpdated, and chrome.tabs.onRemoved in the background or sidebar script. On each event, update the tab list state by re-querying tabs or updating the affected tab entry. Ensure updates are debounced or batched if necessary for performance.",
+            "status": "pending",
+            "testStrategy": "Open, close, and update tabs in Chrome. Confirm that the sidebar updates instantly to reflect changes without requiring a manual refresh."
+          },
+          {
+            "id": 4,
+            "title": "Enhance Tab Item UI with Truncated Titles and Circular Favicons",
+            "description": "Refine the tab list UI to display favicons in circular frames and truncate tab titles to fit within the sidebar layout.",
+            "dependencies": [
+              "4.3"
+            ],
+            "details": "Apply CSS to render each favicon inside a circular container (e.g., border-radius: 50%). Truncate tab titles with ellipsis if they exceed available width. Ensure alignment and spacing match design requirements. Add tooltips to show full tab titles on hover if needed.",
+            "status": "pending",
+            "testStrategy": "Visually inspect tab items for correct favicon shape, title truncation, and alignment. Hover over truncated titles to verify tooltip (if implemented)."
+          },
+          {
+            "id": 5,
+            "title": "Finalize Sidebar Accessibility and Edge Case Handling",
+            "description": "Ensure the sidebar is accessible, handles edge cases (e.g., no tabs, many tabs), and meets keyboard navigation requirements.",
+            "dependencies": [
+              "4.4"
+            ],
+            "details": "Add ARIA roles and labels for sidebar and tab items. Support keyboard navigation for expand/collapse and tab selection. Handle cases where there are zero tabs or a very large number of tabs (e.g., add scroll or pagination). Test for responsiveness and performance with many tabs.",
+            "status": "pending",
+            "testStrategy": "Use screen reader and keyboard to navigate the sidebar. Test with zero, few, and many tabs to ensure correct behavior and performance."
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Build Main Canvas with Horizontal Scrolling and Tab Group Drop Zones",
+        "description": "Create horizontally scrollable canvas area to display tab groups for the current workspace, with visual drop zones for drag-and-drop.",
+        "details": "Implement canvas with horizontal scroll and 20px padding. Render tab groups spanning full width. Add drop zones with visual feedback using Framer Motion for animation.",
+        "testStrategy": "Add multiple tab groups and verify horizontal scrolling. Drag tabs/groups and confirm drop zones appear and animate correctly.",
+        "priority": "high",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Horizontally Scrollable Canvas Container",
+            "description": "Create the main canvas area with horizontal scrolling and 20px padding to serve as the container for tab groups.",
+            "dependencies": [],
+            "details": "Use a div styled with CSS properties such as 'overflow-x: auto', 'white-space: nowrap', and 'padding: 20px' to enable horizontal scrolling. Ensure the container stretches to the available width and supports smooth scrolling. Test with placeholder content to verify scroll behavior.",
+            "status": "pending",
+            "testStrategy": "Add enough placeholder tab groups to require scrolling. Confirm horizontal scroll works and padding is applied."
+          },
+          {
+            "id": 2,
+            "title": "Render Tab Groups Spanning Full Width",
+            "description": "Display tab group components inside the canvas, ensuring each group spans the full available height and is arranged horizontally.",
+            "dependencies": [
+              "5.1"
+            ],
+            "details": "Map over the tab groups for the current workspace and render each as a child of the scrollable container. Use 'display: inline-block' or a flex row layout to arrange groups horizontally. Ensure each group fills the vertical space and maintains consistent spacing.",
+            "status": "pending",
+            "testStrategy": "Render multiple tab groups and verify they are displayed side by side, spanning the full height of the canvas."
+          },
+          {
+            "id": 3,
+            "title": "Integrate Drop Zones Between Tab Groups",
+            "description": "Add drop zones between and around tab groups to support drag-and-drop operations.",
+            "dependencies": [
+              "5.2"
+            ],
+            "details": "Insert drop zone components before, between, and after tab groups. Each drop zone should be a visible area that can accept drag events. Use react-dnd or @dnd-kit/core for drag-and-drop logic. Style drop zones to be visually distinct but unobtrusive when inactive.",
+            "status": "pending",
+            "testStrategy": "Drag a tab or tab group and verify that drop zones appear in the correct locations between tab groups."
+          },
+          {
+            "id": 4,
+            "title": "Add Visual Feedback and Animation to Drop Zones",
+            "description": "Enhance drop zones with animated visual feedback using Framer Motion when a draggable item is hovered over them.",
+            "dependencies": [
+              "5.3"
+            ],
+            "details": "Wrap drop zone components with Framer Motion elements. Animate properties such as scale, background color, or border when a draggable item is hovered. Ensure animations are smooth and reset when the drag leaves the drop zone.",
+            "status": "pending",
+            "testStrategy": "Drag a tab or group over drop zones and confirm that visual feedback and animations trigger correctly."
+          },
+          {
+            "id": 5,
+            "title": "Wire Up Drag-and-Drop Logic for Tab Groups",
+            "description": "Implement the logic to handle drag-and-drop of tab groups, updating their order and workspace state on drop.",
+            "dependencies": [
+              "5.4"
+            ],
+            "details": "Use react-dnd or @dnd-kit/core to manage drag sources and drop targets. On drop, update the tab group order in state and persist changes if necessary. Ensure drop zones update dynamically based on drag state.",
+            "status": "pending",
+            "testStrategy": "Drag tab groups to new positions and verify that the order updates correctly and persists across reloads."
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Implement Tab Groups with Editable Headers and Context Menus",
+        "description": "Develop tab group containers with editable names, Lucide React icons, tab count, and context menus for group actions.",
+        "details": "Allow inline editing of group names. Integrate Lucide React icon picker. Display tab count with click-to-open-all functionality. Add context menu with sort, duplicate, delete, and archive options. Support group archiving and deletion.",
+        "testStrategy": "Create, edit, and interact with tab groups. Open all tabs in group. Use context menu actions and verify correct behavior and persistence.",
+        "priority": "high",
+        "dependencies": [
+          5
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Render Tab Group Container with Editable Header",
+            "description": "Implement the tab group container UI, including an editable group name and display of the Lucide React icon.",
+            "dependencies": [],
+            "details": "Create a TabGroup component that renders a container for each group. Add an input or inline editing mechanism for the group name, allowing users to click and edit the name directly. Integrate a Lucide React icon picker next to the name, enabling icon selection and display. Ensure accessibility by using appropriate ARIA roles and keyboard navigation for editing.",
+            "status": "pending",
+            "testStrategy": "Verify that the group name can be edited inline, the icon picker opens and updates the icon, and all elements are accessible via keyboard."
+          },
+          {
+            "id": 2,
+            "title": "Display Tab Count and Implement Open-All Functionality",
+            "description": "Show the number of tabs in each group and allow users to open all tabs in the group with a single click.",
+            "dependencies": [
+              "6.1"
+            ],
+            "details": "Add a tab count indicator to the TabGroup header. Implement a button or clickable area that, when activated, triggers the opening of all tabs in the group (e.g., via browser APIs or simulated navigation). Ensure the UI updates the count dynamically as tabs are added or removed.",
+            "status": "pending",
+            "testStrategy": "Add and remove tabs to verify the count updates. Click the count or button to confirm all tabs open as expected."
+          },
+          {
+            "id": 3,
+            "title": "Implement Context Menu for Group Actions",
+            "description": "Add a context menu to each tab group with options for sort, duplicate, delete, and archive.",
+            "dependencies": [
+              "6.1"
+            ],
+            "details": "Integrate a right-click or menu button that opens a context menu for each group. Implement menu actions: sort (by name or custom order), duplicate (clone group and tabs), delete (remove group), and archive (move group to archived state). Use a menu library or custom implementation with keyboard and mouse support.",
+            "status": "pending",
+            "testStrategy": "Open the context menu via right-click and menu button. Select each action and verify correct behavior and UI updates."
+          },
+          {
+            "id": 4,
+            "title": "Handle Group Archiving and Deletion Logic",
+            "description": "Implement backend and UI logic for archiving and deleting tab groups, ensuring persistence and state updates.",
+            "dependencies": [
+              "6.3"
+            ],
+            "details": "On archive, move the group to an archived state (e.g., separate list or hidden from main view). On delete, remove the group and its tabs from state and persistent storage. Ensure undo/restore options if required. Update UI to reflect changes immediately and persist updates using the data layer.",
+            "status": "pending",
+            "testStrategy": "Archive and delete groups, then reload the app to verify persistence. Check that archived groups are not shown in the main list and deleted groups are removed."
+          },
+          {
+            "id": 5,
+            "title": "Integrate State Management and Persistence for Tab Groups",
+            "description": "Connect tab group UI and actions to the application's state management and persistence layer.",
+            "dependencies": [
+              "6.2",
+              "6.4"
+            ],
+            "details": "Wire up all tab group actions (edit name, icon, open all, context menu actions) to the application's state (e.g., React Context, Redux) and ensure changes are saved to persistent storage (e.g., IndexedDB). Implement listeners or hooks to update the UI in response to state changes and restore state on reload.",
+            "status": "pending",
+            "testStrategy": "Perform all group actions and reload the app to confirm state and UI are consistent. Test with multiple groups and tabs to ensure data integrity."
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Develop Comprehensive Drag and Drop System",
+        "description": "Implement drag-and-drop for tabs and groups using react-dnd or @dnd-kit/core, supporting all specified drag scenarios.",
+        "details": "Enable dragging tabs from sidebar to groups/canvas, between groups, and within groups. Provide visual feedback (line indicator, drop zone highlighting) using Framer Motion. Ensure drop actions update IndexedDB and UI state.",
+        "testStrategy": "Test all drag scenarios: sidebar→group, sidebar→canvas, group→group, within group, group→canvas. Validate drop feedback and data updates.",
+        "priority": "high",
+        "dependencies": [
+          4,
+          5,
+          6
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set Up Drag-and-Drop Context and Providers",
+            "description": "Initialize the drag-and-drop system by integrating react-dnd or @dnd-kit/core at the root of the relevant component tree, ensuring all child components have access to DnD context.",
+            "dependencies": [],
+            "details": "Wrap the main application or the relevant subtree with the DnD context provider (DndProvider for react-dnd or DndContext for @dnd-kit/core). Choose the appropriate backend (e.g., HTML5Backend for react-dnd). Ensure the context is accessible to all tab, group, and sidebar components that will participate in drag-and-drop.",
+            "status": "pending",
+            "testStrategy": "Verify that child components can access the DnD context and that no errors occur on initialization."
+          },
+          {
+            "id": 2,
+            "title": "Implement Draggable and Droppable Tab and Group Components",
+            "description": "Make tab and group components draggable and define valid drop targets for all required scenarios: sidebar to group/canvas, between groups, and within groups.",
+            "dependencies": [
+              "7.1"
+            ],
+            "details": "For each tab and group, implement drag source and drop target logic using the chosen DnD library. Assign unique IDs to all draggable items. Configure drop targets to accept the correct item types and handle drop events. Ensure all specified drag scenarios are supported, including dragging from the sidebar to groups/canvas, between groups, and within groups.",
+            "status": "pending",
+            "testStrategy": "Test dragging tabs and groups in all supported directions and verify that drop events are triggered correctly."
+          },
+          {
+            "id": 3,
+            "title": "Integrate Visual Feedback with Framer Motion",
+            "description": "Provide real-time visual feedback during drag operations, including line indicators and drop zone highlighting, using Framer Motion for smooth animations.",
+            "dependencies": [
+              "7.2"
+            ],
+            "details": "On drag start, animate the dragged item and highlight potential drop zones using Framer Motion. Display a line indicator or highlight effect at the intended drop location. Ensure feedback is responsive and visually distinct for each drag scenario.",
+            "status": "pending",
+            "testStrategy": "Visually inspect drag interactions to confirm that indicators and highlights appear and animate correctly for all drop targets."
+          },
+          {
+            "id": 4,
+            "title": "Update IndexedDB and UI State on Drop Actions",
+            "description": "Ensure that all drop actions persist changes to IndexedDB and update the UI state to reflect the new tab/group arrangement.",
+            "dependencies": [
+              "7.3"
+            ],
+            "details": "On successful drop, update the relevant data structures in IndexedDB to reflect the new positions of tabs and groups. Synchronize the UI state with the persisted data to ensure consistency. Handle edge cases such as invalid drops or concurrent updates.",
+            "status": "pending",
+            "testStrategy": "After each drop, reload the UI and confirm that the new arrangement persists. Check IndexedDB for correct data updates."
+          },
+          {
+            "id": 5,
+            "title": "Comprehensive Testing of All Drag-and-Drop Scenarios",
+            "description": "Test all supported drag-and-drop scenarios, including sidebar to group/canvas, between groups, within groups, and group to canvas, ensuring correct feedback and data updates.",
+            "dependencies": [
+              "7.4"
+            ],
+            "details": "Create a test plan covering each drag scenario. Manually and/or programmatically test dragging tabs and groups in all directions. Validate that visual feedback appears as expected and that data is correctly updated in both UI and IndexedDB. Address any discovered bugs or inconsistencies.",
+            "status": "pending",
+            "testStrategy": "Execute the test plan, document results, and verify that all acceptance criteria are met for drag-and-drop functionality."
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Implement Workspace Management Bar and Switching",
+        "description": "Create workspace bar at top with max 10 workspaces, slide animation for switching, and auto-save/restore of workspace state.",
+        "details": "Render workspace tabs (max 10) with 48px height. Default workspace on first use. Animate switching with Framer Motion. Persist workspace state in IndexedDB. Remember last active workspace.",
+        "testStrategy": "Create, switch, and delete workspaces. Verify state persistence and animation. Test workspace limits and restoration on reload.",
+        "priority": "medium",
+        "dependencies": [
+          3,
+          5
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Render Workspace Bar with Tab Limit and Default Workspace",
+            "description": "Implement the top workspace bar UI, enforcing a maximum of 10 workspaces, each as a tab with 48px height. Ensure a default workspace is created and selected on first use.",
+            "dependencies": [],
+            "details": "Create a React component for the workspace bar. Render up to 10 workspace tabs, each styled to 48px height. On initial load, check if any workspaces exist; if not, create and select a default workspace. Disable or hide the 'add workspace' button when 10 workspaces exist.",
+            "status": "pending",
+            "testStrategy": "Verify that no more than 10 workspaces can be created. On first use, confirm a default workspace appears and is selected."
+          },
+          {
+            "id": 2,
+            "title": "Implement Workspace Switching with Slide Animation",
+            "description": "Enable switching between workspaces via tab clicks, using Framer Motion to animate the transition with a slide effect.",
+            "dependencies": [
+              "8.1"
+            ],
+            "details": "Integrate Framer Motion into the workspace bar component. On tab click, trigger a slide animation to transition between workspace contents. Ensure animation direction reflects navigation (e.g., left/right). Maintain smooth performance for up to 10 workspaces.",
+            "status": "pending",
+            "testStrategy": "Switch between workspaces and confirm the slide animation plays correctly in both directions. Test rapid switching for animation stability."
+          },
+          {
+            "id": 3,
+            "title": "Persist Workspace State in IndexedDB",
+            "description": "Save all workspace data, including tab groups and tabs, to IndexedDB using the established persistence layer. Ensure all changes are auto-saved.",
+            "dependencies": [
+              "8.1"
+            ],
+            "details": "Use the IndexedDB schema from Task 3 to store workspace objects. On any workspace modification (add, rename, delete, reorder), update the database. Implement auto-save on relevant state changes. Use idb or Dexie.js for database operations.",
+            "status": "pending",
+            "testStrategy": "Create, modify, and delete workspaces. Reload the app and verify all changes persist. Simulate offline mode to confirm local persistence."
+          },
+          {
+            "id": 4,
+            "title": "Restore Workspace State and Last Active Workspace on Load",
+            "description": "On application startup, load all workspaces from IndexedDB and restore the last active workspace as the selected tab.",
+            "dependencies": [
+              "8.3"
+            ],
+            "details": "On app initialization, fetch workspace data from IndexedDB. Restore the workspace bar and select the last active workspace (tracked in storage). If no workspaces exist, fall back to creating the default workspace. Ensure UI state matches persisted data.",
+            "status": "pending",
+            "testStrategy": "Switch to a workspace, reload the app, and confirm the same workspace is active. Delete all workspaces and reload to verify default workspace creation."
+          },
+          {
+            "id": 5,
+            "title": "Handle Workspace Deletion and Tab Reassignment",
+            "description": "Allow users to delete workspaces, ensuring that tabs/groups are handled appropriately and the UI updates. If the active workspace is deleted, switch to a valid remaining workspace.",
+            "dependencies": [
+              "8.1",
+              "8.3",
+              "8.4"
+            ],
+            "details": "Implement workspace deletion logic. On delete, remove the workspace from IndexedDB and update the workspace bar. If the deleted workspace was active, select the next available workspace (preferably the one to the left, or right if none left). Ensure no orphaned tabs/groups remain.",
+            "status": "pending",
+            "testStrategy": "Delete workspaces in various orders, including the active one. Confirm the UI updates, no data leaks, and a valid workspace is always selected."
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Implement Individual Tab Management and Display",
+        "description": "Handle tab display, click-to-open, favicon rendering, and URL validation within groups and sidebar.",
+        "details": "Truncate tab titles to 15 chars. Render favicons in circular frames with 5px padding and border. On click, open tab URL in current tab. Validate URLs and clean up dead links. Support tab drag-and-drop.",
+        "testStrategy": "Open tabs via UI, check favicon and title rendering, test URL validation and error handling. Drag tabs within/between groups.",
+        "priority": "high",
+        "dependencies": [
+          4,
+          6,
+          7
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Render Tab List with Truncated Titles and Favicon Styling",
+            "description": "Display all tabs within their respective groups and the sidebar, ensuring tab titles are truncated to 15 characters and favicons are rendered in circular frames with 5px padding and border.",
+            "dependencies": [],
+            "details": "Implement a tab list component that iterates through tab data for each group and the sidebar. For each tab, display the title truncated to 15 characters. Render the favicon inside a circular container with 5px padding and a visible border. Use CSS for circular cropping and padding. Ensure the layout is consistent across groups and the sidebar.",
+            "status": "pending",
+            "testStrategy": "Visually inspect tab lists for correct truncation and favicon rendering. Use sample data with varying title lengths and favicon URLs."
+          },
+          {
+            "id": 2,
+            "title": "Implement Click-to-Open Tab Functionality",
+            "description": "Enable users to open a tab's URL in the current browser tab when clicking on a tab entry in the UI.",
+            "dependencies": [
+              "9.1"
+            ],
+            "details": "Attach click event handlers to each tab entry. On click, validate the tab's URL and use the appropriate browser API (e.g., window.location or extension API) to open the URL in the current tab. Ensure the UI provides feedback (e.g., loading state) during navigation.",
+            "status": "pending",
+            "testStrategy": "Click each tab entry and verify that the correct URL opens in the current tab. Test with valid and invalid URLs."
+          },
+          {
+            "id": 3,
+            "title": "Validate Tab URLs and Clean Up Dead Links",
+            "description": "Check each tab's URL for validity and remove or flag tabs with dead or unreachable links.",
+            "dependencies": [
+              "9.1"
+            ],
+            "details": "Implement a URL validation function that checks for proper URL format and optionally pings the URL to verify reachability. For dead or invalid links, either remove the tab from the list or display a warning icon. Provide a cleanup action to remove all flagged tabs.",
+            "status": "pending",
+            "testStrategy": "Test with a mix of valid, invalid, and unreachable URLs. Verify that dead links are detected and handled as specified."
+          },
+          {
+            "id": 4,
+            "title": "Enable Tab Drag-and-Drop within and Between Groups",
+            "description": "Allow users to drag tabs to reorder them within a group or move them between groups and the sidebar.",
+            "dependencies": [
+              "9.1"
+            ],
+            "details": "Integrate a drag-and-drop library or use native HTML5 drag-and-drop APIs. Implement handlers for drag start, drag over, and drop events. Update the tab data structure to reflect new positions or group assignments after drop. Ensure visual feedback during dragging.",
+            "status": "pending",
+            "testStrategy": "Drag tabs within a group and between groups/sidebar. Verify that the order and group assignment update correctly in the UI and underlying data."
+          },
+          {
+            "id": 5,
+            "title": "Synchronize Tab State with Sidebar and Group Views",
+            "description": "Ensure that all tab management actions (display, open, validation, drag-and-drop) are consistently reflected in both group and sidebar views.",
+            "dependencies": [
+              "9.1",
+              "9.2",
+              "9.3",
+              "9.4"
+            ],
+            "details": "Implement a shared state management solution (e.g., React context, Redux, or equivalent) to synchronize tab data across all components. Ensure that any changes (opening, removal, reordering, validation) are immediately reflected in both the group and sidebar displays. Handle edge cases such as simultaneous updates or conflicts.",
+            "status": "pending",
+            "testStrategy": "Perform tab actions in one view and verify immediate, correct updates in all other relevant views. Test with rapid consecutive actions and edge cases."
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Implement Data Persistence and State Restoration",
+        "description": "Ensure all tab, group, and workspace data is persisted in IndexedDB and restored on extension load.",
+        "details": "On extension startup, load data from IndexedDB and hydrate UI state. Save all changes (tab/group/workspace edits, drag-and-drop) to IndexedDB. Handle data migration and error recovery.",
+        "testStrategy": "Simulate extension reload and browser restart. Verify all data is restored. Test data integrity after multiple operations.",
+        "priority": "high",
+        "dependencies": [
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design Data Models and Migration Strategy",
+            "description": "Define and document the data models for tabs, groups, and workspaces, and establish a versioned migration strategy for IndexedDB schema changes.",
+            "dependencies": [],
+            "details": "Specify the structure and relationships for all entities (tabs, groups, workspaces) to be persisted. Implement a versioning system for the IndexedDB schema. Write migration functions to handle upgrades and downgrades between schema versions, ensuring backward compatibility and data integrity.",
+            "status": "pending",
+            "testStrategy": "Write unit tests for schema migrations. Simulate upgrades and downgrades with sample data to verify correct transformation and preservation."
+          },
+          {
+            "id": 2,
+            "title": "Implement IndexedDB Persistence Layer",
+            "description": "Develop a robust persistence layer using idb or Dexie.js to handle CRUD operations for all entities, including error handling and transaction management.",
+            "dependencies": [
+              "10.1"
+            ],
+            "details": "Set up IndexedDB using the chosen library. Implement create, read, update, and delete operations for tabs, groups, and workspaces. Ensure all operations are atomic and handle errors gracefully, providing fallback or retry logic as needed.",
+            "status": "pending",
+            "testStrategy": "Write unit and integration tests for all CRUD operations. Simulate error conditions (e.g., quota exceeded, transaction failure) and verify recovery."
+          },
+          {
+            "id": 3,
+            "title": "Integrate State Loading and Hydration on Extension Startup",
+            "description": "On extension load, retrieve persisted data from IndexedDB and hydrate the UI state, ensuring all tabs, groups, and workspaces are restored accurately.",
+            "dependencies": [
+              "10.2"
+            ],
+            "details": "Implement startup logic to load all relevant data from IndexedDB before rendering the UI. Map persisted data to in-memory state structures used by the UI. Handle cases where data is missing, corrupted, or partially migrated, and provide user feedback or recovery options.",
+            "status": "pending",
+            "testStrategy": "Simulate extension reloads and browser restarts. Verify that all UI components reflect the restored state and handle edge cases (e.g., missing or corrupted data)."
+          },
+          {
+            "id": 4,
+            "title": "Persist State Changes on User Actions",
+            "description": "Ensure all user actions that modify tabs, groups, or workspaces (including edits and drag-and-drop) are immediately and reliably persisted to IndexedDB.",
+            "dependencies": [
+              "10.3"
+            ],
+            "details": "Attach persistence logic to all relevant UI actions. Use debouncing or batching where appropriate to optimize write frequency. Confirm that every change (creation, update, deletion, reordering) is reflected in IndexedDB and that the UI remains in sync with the persisted state.",
+            "status": "pending",
+            "testStrategy": "Perform a sequence of tab/group/workspace edits and drag-and-drop actions. Reload the extension and verify that all changes persist and restore correctly."
+          },
+          {
+            "id": 5,
+            "title": "Implement Error Recovery and Data Integrity Checks",
+            "description": "Detect and handle errors during data load/save operations, and implement integrity checks to prevent or recover from data corruption.",
+            "dependencies": [
+              "10.4"
+            ],
+            "details": "Add error handling for all IndexedDB operations, including user notifications and automatic retries where feasible. Implement integrity checks (e.g., schema validation, orphaned references) during load and save. Provide mechanisms to repair or reset corrupted data, with clear user prompts if intervention is needed.",
+            "status": "pending",
+            "testStrategy": "Inject faults and simulate data corruption scenarios. Verify that errors are detected, users are notified, and recovery mechanisms restore a consistent state."
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "title": "Develop Archive and Delete System with Recently Deleted Section",
+        "description": "Implement archiving for tabs/groups and a recently deleted section with 14-day retention and restore functionality.",
+        "details": "Add archive buttons to tab/group UI. Move archived items to hidden state in IndexedDB. Implement recently deleted section accessible from settings/menu. Automatically purge items after 14 days. Allow restore of archived/deleted items.",
+        "testStrategy": "Archive/delete tabs/groups, verify they disappear from main UI and appear in archive/deleted section. Restore items and check data/state. Test 14-day retention logic.",
+        "priority": "medium",
+        "dependencies": [
+          3,
+          6,
+          10
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Add Archive and Delete Actions to Tab/Group UI",
+            "description": "Integrate archive and delete buttons into the tab and group user interfaces, enabling users to initiate archiving or deletion directly from the UI.",
+            "dependencies": [],
+            "details": "Update the tab and group components to include archive and delete buttons. Ensure these actions trigger appropriate handlers that initiate the archiving or deletion process. Use context menus or inline buttons as appropriate for the UI design. Ensure accessibility and visual feedback for action states.",
+            "status": "pending",
+            "testStrategy": "Verify that archive and delete buttons appear in the UI for tabs and groups. Test that clicking these buttons triggers the correct handler and does not cause UI errors."
+          },
+          {
+            "id": 2,
+            "title": "Implement Archiving Logic and Storage in IndexedDB",
+            "description": "Develop the logic to move archived tabs/groups to a hidden state in IndexedDB, ensuring they are excluded from the main UI but retained for potential restoration.",
+            "dependencies": [
+              "11.1"
+            ],
+            "details": "Extend the IndexedDB schema to support an 'archived' state for tabs and groups. Update data access logic to filter out archived items from the main display. Ensure archiving is atomic and does not result in data loss. Provide migration logic if schema changes are required.",
+            "status": "pending",
+            "testStrategy": "Archive tabs/groups and confirm they disappear from the main UI but remain accessible in the database with the correct state."
+          },
+          {
+            "id": 3,
+            "title": "Develop Recently Deleted Section with 14-Day Retention",
+            "description": "Create a 'Recently Deleted' section accessible from settings or the main menu, displaying deleted items with a 14-day retention period before permanent removal.",
+            "dependencies": [
+              "11.2"
+            ],
+            "details": "Design and implement a UI section listing recently deleted tabs/groups, showing deletion timestamps and days remaining. Update deletion logic to move items to this section instead of immediate removal. Store deletion metadata in IndexedDB. Ensure the section is easily accessible and visually distinct.",
+            "status": "pending",
+            "testStrategy": "Delete tabs/groups and verify they appear in the Recently Deleted section with correct metadata. Confirm the section is accessible and updates in real time."
+          },
+          {
+            "id": 4,
+            "title": "Implement Restore Functionality for Archived and Deleted Items",
+            "description": "Enable users to restore archived or recently deleted tabs/groups, returning them to their original state and location in the main UI.",
+            "dependencies": [
+              "11.2",
+              "11.3"
+            ],
+            "details": "Add restore actions to both the archive and recently deleted sections. Implement logic to revert the archived/deleted state in IndexedDB and update the UI accordingly. Handle edge cases such as restoring to a non-existent group or conflicting tab IDs.",
+            "status": "pending",
+            "testStrategy": "Restore archived and deleted items and verify they reappear in the main UI with correct data and state. Test restoring multiple items and edge cases."
+          },
+          {
+            "id": 5,
+            "title": "Automate Purging of Items After 14-Day Retention",
+            "description": "Implement background logic to automatically and permanently remove items from the Recently Deleted section after 14 days.",
+            "dependencies": [
+              "11.3"
+            ],
+            "details": "Set up a scheduled background task or check on app startup to scan for and purge items older than 14 days from the Recently Deleted section in IndexedDB. Ensure this process is efficient and does not block the UI. Log or notify users if needed.",
+            "status": "pending",
+            "testStrategy": "Manually set deletion timestamps to simulate aging and verify that items are purged after 14 days. Confirm no residual data remains in IndexedDB."
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Integrate Framer Motion Animations and UI Polish",
+        "description": "Add smooth animations for sidebar, workspace switching, drag-and-drop, and UI transitions using Framer Motion and cubic-bezier easing.",
+        "details": "Apply Framer Motion to sidebar expand/collapse, workspace slide, drag feedback, and context menus. Use cubic-bezier for all transitions. Polish UI per design system (typography, color palette, favicon styling).",
+        "testStrategy": "Review all animated interactions for smoothness and performance. Compare against design specs. Test on various screen sizes.",
+        "priority": "medium",
+        "dependencies": [
+          4,
+          5,
+          6,
+          7,
+          8,
+          11
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Sidebar Expand/Collapse Animation",
+            "description": "Apply Framer Motion to animate the sidebar's expand and collapse transitions, ensuring smooth cubic-bezier easing and responsive performance.",
+            "dependencies": [],
+            "details": "Wrap the sidebar container with Framer Motion's motion component. Define initial, animate, and exit states for width and opacity. Use a cubic-bezier curve for the transition property. Ensure the sidebar animates on hover and button toggle, and test for performance on various screen sizes.",
+            "status": "pending",
+            "testStrategy": "Trigger sidebar expand/collapse via hover and button. Verify smoothness, correct easing, and no layout jank. Compare against design specs."
+          },
+          {
+            "id": 2,
+            "title": "Animate Workspace Switching Transitions",
+            "description": "Integrate Framer Motion to animate workspace switching, such as sliding or fading between workspace views, using cubic-bezier transitions.",
+            "dependencies": [
+              "12.1"
+            ],
+            "details": "Wrap the workspace container with AnimatePresence and motion components. Define slide-in and slide-out variants for workspace transitions. Apply cubic-bezier easing to all transitions. Ensure the animation is triggered on workspace switch and is interruptible.",
+            "status": "pending",
+            "testStrategy": "Switch between multiple workspaces and confirm the animation is smooth, matches design intent, and does not cause flicker or lag."
+          },
+          {
+            "id": 3,
+            "title": "Add Drag-and-Drop Feedback Animations",
+            "description": "Use Framer Motion to provide animated feedback for drag-and-drop interactions, including tab groups and drop zones.",
+            "dependencies": [
+              "12.2"
+            ],
+            "details": "Enhance drag sources and drop targets with motion components. Animate scale, shadow, and opacity during drag. Animate drop zone appearance using cubic-bezier transitions. Ensure feedback is immediate and visually clear for all drag-and-drop actions.",
+            "status": "pending",
+            "testStrategy": "Drag tab groups and tabs across the canvas. Verify animated feedback appears on drag start, over drop zones, and on drop. Confirm transitions are smooth and accessible."
+          },
+          {
+            "id": 4,
+            "title": "Animate Context Menus and UI Transitions",
+            "description": "Apply Framer Motion to context menus and other UI overlays, ensuring all transitions use cubic-bezier easing and match design system guidelines.",
+            "dependencies": [
+              "12.3"
+            ],
+            "details": "Wrap context menu components with motion elements. Define fade and scale transitions for menu open/close. Use AnimatePresence for mounting/unmounting. Apply cubic-bezier transitions and ensure accessibility (focus management, keyboard navigation).",
+            "status": "pending",
+            "testStrategy": "Open and close context menus in various UI states. Confirm transitions are smooth, accessible, and consistent with the design system."
+          },
+          {
+            "id": 5,
+            "title": "Polish UI per Design System (Typography, Colors, Favicon)",
+            "description": "Refine all UI elements to match the design system, including typography, color palette, and favicon styling, ensuring consistency across all animated components.",
+            "dependencies": [
+              "12.4"
+            ],
+            "details": "Audit all UI components for adherence to the design system. Update typography (font families, sizes, weights), apply the correct color palette, and style favicons as specified. Ensure all animated elements retain visual consistency before and after transitions.",
+            "status": "pending",
+            "testStrategy": "Review UI against design specs. Test on multiple devices and screen sizes. Confirm all typography, colors, and favicon styles are consistent and visually polished."
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "title": "Implement Accessibility and Responsive Design",
+        "description": "Ensure keyboard navigation, ARIA roles, and responsive layouts for all components.",
+        "details": "Add keyboard navigation for sidebar, canvas, groups, and workspaces. Use ARIA attributes for interactive elements. Make layout responsive for different screen sizes.",
+        "testStrategy": "Test with keyboard only. Use screen readers to verify accessibility. Resize window and check responsive behavior.",
+        "priority": "medium",
+        "dependencies": [
+          4,
+          5,
+          6,
+          8,
+          12
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Keyboard Navigation for Sidebar",
+            "description": "Enable full keyboard navigation for the sidebar, ensuring users can access all sidebar controls and items using only the keyboard.",
+            "dependencies": [],
+            "details": "Add tabindex attributes to all interactive sidebar elements. Use native HTML elements (e.g., <button>, <a>) where possible for built-in accessibility. Implement keyboard event handlers (Arrow keys, Tab, Shift+Tab, Enter, Space) to allow navigation and activation of sidebar items. Ensure focus indicators are visible and logical.",
+            "status": "pending",
+            "testStrategy": "Test with keyboard only: Tab through all sidebar elements, verify focus order, and activate items using Enter/Space."
+          },
+          {
+            "id": 2,
+            "title": "Add Keyboard Navigation to Canvas, Groups, and Workspaces",
+            "description": "Extend keyboard navigation to the canvas area, tab groups, and workspace controls, ensuring all interactive elements are accessible via keyboard.",
+            "dependencies": [
+              "13.1"
+            ],
+            "details": "Assign tabindex and appropriate roles to canvas, group, and workspace controls. Implement keyboard handlers for navigation between groups and workspaces (e.g., Arrow keys to move between groups, Enter to select). Ensure logical focus management when moving between sidebar, canvas, and workspace elements.",
+            "status": "pending",
+            "testStrategy": "Navigate through canvas, groups, and workspaces using keyboard only. Verify focus order, group switching, and activation."
+          },
+          {
+            "id": 3,
+            "title": "Apply ARIA Roles and Attributes to Interactive Elements",
+            "description": "Add ARIA roles and attributes to all custom and interactive elements to enhance compatibility with assistive technologies.",
+            "dependencies": [
+              "13.2"
+            ],
+            "details": "Identify all non-native interactive elements (custom buttons, dialogs, navigation regions). Assign appropriate ARIA roles (e.g., role=\"button\", role=\"navigation\"). Add ARIA states and properties such as aria-expanded, aria-label, aria-labelledby, and aria-disabled as needed. Ensure all interactive elements have accessible names, using visible labels or ARIA attributes as appropriate[1][2][3][4][5].",
+            "status": "pending",
+            "testStrategy": "Use screen readers to verify that all interactive elements are announced correctly, with accurate roles, states, and names."
+          },
+          {
+            "id": 4,
+            "title": "Implement Responsive Layouts for All Components",
+            "description": "Ensure that the sidebar, canvas, groups, and workspace layouts adapt gracefully to different screen sizes and orientations.",
+            "dependencies": [
+              "13.3"
+            ],
+            "details": "Use CSS media queries and flexible layout techniques (Flexbox, Grid) to adjust component sizes, spacing, and arrangement for mobile, tablet, and desktop screens. Test with various viewport sizes to ensure usability and readability. Avoid horizontal scrolling and ensure touch targets are appropriately sized on small screens.",
+            "status": "pending",
+            "testStrategy": "Resize the browser window and test on multiple devices. Verify that all components remain usable and visually coherent at all breakpoints."
+          },
+          {
+            "id": 5,
+            "title": "Conduct Accessibility and Responsiveness Testing",
+            "description": "Perform comprehensive testing to validate keyboard navigation, ARIA implementation, and responsive design across all components.",
+            "dependencies": [
+              "13.4"
+            ],
+            "details": "Test the application using keyboard only, screen readers (e.g., NVDA, VoiceOver), and by resizing the window or using device emulators. Address any accessibility or layout issues found. Document test results and any remaining accessibility limitations.",
+            "status": "pending",
+            "testStrategy": "Follow WCAG guidelines for accessibility testing. Use automated tools (axe, Lighthouse) and manual testing with assistive technologies. Verify all user flows are accessible and responsive."
+          }
+        ]
+      },
+      {
+        "id": 14,
+        "title": "Implement Robust Error Handling and Edge Case Management",
+        "description": "Handle errors from Chrome APIs, IndexedDB, and UI gracefully with user-friendly messages and fallback logic.",
+        "details": "Catch and display errors for API failures, storage issues, and invalid user actions. Provide fallback UI for corrupted data or unavailable APIs. Log errors for debugging.",
+        "testStrategy": "Simulate API/storage failures and invalid actions. Verify error messages and fallback behavior. Check for no data loss.",
+        "priority": "medium",
+        "dependencies": [
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          10,
+          11,
+          12
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Audit and Categorize Error Sources",
+            "description": "Identify all potential error sources in Chrome APIs, IndexedDB operations, and UI interactions. Categorize errors by type (e.g., API failure, storage issue, invalid user action, corrupted data).",
+            "dependencies": [],
+            "details": "Review all code paths that interact with Chrome APIs, IndexedDB, and user input. Document possible failure modes for each. Categorize errors into actionable groups (e.g., recoverable, non-recoverable, user-correctable). This forms the foundation for targeted handling and messaging.",
+            "status": "pending",
+            "testStrategy": "Manually trigger each error type in a development environment and verify detection and categorization."
+          },
+          {
+            "id": 2,
+            "title": "Implement Centralized Error Logging and Monitoring",
+            "description": "Create a centralized error logging system to capture, store, and monitor errors from all sources for debugging and analytics.",
+            "dependencies": [
+              "14.1"
+            ],
+            "details": "Design a logging utility that records error details (type, message, stack trace, context) from Chrome APIs, IndexedDB, and UI. Ensure logs are accessible for debugging and optionally persisted for post-mortem analysis. Integrate with existing monitoring tools if available.",
+            "status": "pending",
+            "testStrategy": "Simulate errors and verify that all relevant information is logged and retrievable."
+          },
+          {
+            "id": 3,
+            "title": "Design and Implement User-Friendly Error Messaging",
+            "description": "Develop a consistent, user-friendly error messaging system that displays clear, actionable messages for each error category without exposing sensitive details.",
+            "dependencies": [
+              "14.1"
+            ],
+            "details": "Define a message schema with error codes, short summaries, and detailed user guidance. Implement UI components to display these messages contextually (e.g., toast, modal, inline). Ensure messages are actionable and avoid technical jargon. Reference best practices for clarity and security.",
+            "status": "pending",
+            "testStrategy": "Trigger each error scenario and verify that the correct, user-friendly message is shown without leaking sensitive information."
+          },
+          {
+            "id": 4,
+            "title": "Implement Fallback Logic and Recovery Flows",
+            "description": "Develop fallback mechanisms and recovery flows for critical error scenarios, such as unavailable APIs, storage failures, or corrupted data.",
+            "dependencies": [
+              "14.1",
+              "14.3"
+            ],
+            "details": "For each error category, define appropriate fallback actions (e.g., retry, default state, alternative UI, data reset). Implement logic to gracefully degrade functionality or guide users through recovery steps. Ensure the app remains usable and data loss is minimized.",
+            "status": "pending",
+            "testStrategy": "Simulate failures (e.g., disconnect IndexedDB, corrupt data, block Chrome APIs) and verify that fallback logic activates and the user is guided appropriately."
+          },
+          {
+            "id": 5,
+            "title": "Integrate and Test Edge Case Handling Across the Application",
+            "description": "Integrate error handling, messaging, and fallback logic throughout the application. Systematically test all edge cases to ensure robust, graceful behavior.",
+            "dependencies": [
+              "14.2",
+              "14.3",
+              "14.4"
+            ],
+            "details": "Refactor application code to use centralized error handling and messaging. Conduct comprehensive testing of all identified edge cases, including rare or complex failure scenarios. Document test results and iterate on handling as needed.",
+            "status": "pending",
+            "testStrategy": "Automate tests for common edge cases and perform manual exploratory testing for rare scenarios. Confirm that all errors are logged, users are informed, and the app remains stable."
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "title": "Final Testing, Performance Optimization, and Chrome Web Store Preparation",
+        "description": "Conduct end-to-end testing, optimize performance, and prepare extension for Chrome Web Store submission.",
+        "details": "Test all features for correctness and performance (load time <1s, drag <100ms, workspace switch <500ms). Optimize memory usage. Review permissions and manifest. Prepare assets and documentation for Chrome Web Store.",
+        "testStrategy": "Run manual and automated tests. Measure performance metrics. Validate against Chrome Web Store requirements. Conduct user acceptance testing.",
+        "priority": "high",
+        "dependencies": [
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Conduct Automated and Manual End-to-End Testing",
+            "description": "Perform comprehensive end-to-end testing of all extension features using both automated tools and manual user flows to ensure correctness and stability.",
+            "dependencies": [],
+            "details": "Use tools such as Playwright or Puppeteer to automate user interactions and verify all extension workflows, including popup, background, and content scripts. Supplement with manual testing to cover edge cases and UI/UX flows that are difficult to automate. Ensure tests cover all supported Chrome versions and platforms.",
+            "status": "pending",
+            "testStrategy": "Run automated test suites for all major features. Manually test user flows, including installation, tab management, drag-and-drop, workspace switching, and settings. Document and resolve any defects found."
+          },
+          {
+            "id": 2,
+            "title": "Measure and Optimize Performance Metrics",
+            "description": "Profile and optimize the extension to meet performance targets for load time, drag latency, workspace switching, and memory usage.",
+            "dependencies": [
+              "15.1"
+            ],
+            "details": "Use Chrome DevTools and browser profiling tools to measure load time (<1s), drag latency (<100ms), and workspace switch time (<500ms). Identify bottlenecks in rendering, event handling, and data processing. Optimize code, reduce bundle size, and minimize memory usage. Re-test after optimizations to confirm improvements.",
+            "status": "pending",
+            "testStrategy": "Record performance metrics before and after optimizations. Use automated scripts to simulate user actions and measure timings. Validate that all targets are consistently met."
+          },
+          {
+            "id": 3,
+            "title": "Review and Refine Permissions and Manifest",
+            "description": "Audit the manifest.json and all requested permissions to ensure minimal, necessary access and compliance with Chrome Web Store policies.",
+            "dependencies": [
+              "15.2"
+            ],
+            "details": "Review manifest.json for required permissions, background/service worker configuration, and content security policy. Remove any unnecessary permissions. Ensure manifest fields (name, version, description, icons, etc.) are accurate and complete. Validate against the latest Chrome Web Store requirements.",
+            "status": "pending",
+            "testStrategy": "Use Chrome's extension validator and manual inspection to confirm manifest correctness. Attempt to load the extension in Developer Mode and verify all permissions are justified and functional."
+          },
+          {
+            "id": 4,
+            "title": "Prepare Chrome Web Store Assets and Documentation",
+            "description": "Create and finalize all required assets and documentation for Chrome Web Store submission, including icons, screenshots, promotional images, and user-facing descriptions.",
+            "dependencies": [
+              "15.3"
+            ],
+            "details": "Generate icons in all required sizes (16x16, 48x48, 128x128, etc.). Capture high-quality screenshots and promotional images showing key extension features. Write a clear, concise store description, usage instructions, and privacy policy. Ensure all assets meet Chrome Web Store guidelines.",
+            "status": "pending",
+            "testStrategy": "Validate asset dimensions and formats. Review documentation for clarity and completeness. Use the Chrome Web Store developer dashboard to preview how assets and descriptions will appear."
+          },
+          {
+            "id": 5,
+            "title": "Perform Final Compliance Check and Submission Readiness Review",
+            "description": "Verify that the extension package, assets, and documentation meet all Chrome Web Store requirements and are ready for submission.",
+            "dependencies": [
+              "15.4"
+            ],
+            "details": "Run the Chrome Web Store extension checklist, including automated and manual compliance checks. Confirm that all features work as intended, assets are present, and documentation is complete. Prepare the final ZIP package for upload. Address any last-minute issues or feedback.",
+            "status": "pending",
+            "testStrategy": "Use the Chrome Web Store developer dashboard's validation tools. Perform a final manual review of the extension in a clean Chrome profile. Ensure no errors or warnings are present before submission."
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-07-29T00:35:37.652Z",
+      "updated": "2025-07-29T01:39:28.724Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

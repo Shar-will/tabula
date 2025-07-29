@@ -1,0 +1,581 @@
+{
+  "product_requirements_document": {
+    "meta": {
+      "document_version": "1.0",
+      "created_date": "2025-07-28",
+      "project_name": "Tabula",
+      "product_name": "Tabula",
+      "priority": "HIGH",
+      "project_type": "Chrome Extension"
+    },
+    "project_overview": {
+      "product_description": "A Chrome extension called Tabula that replaces the default new tab page with a comprehensive tab management system featuring drag-and-drop functionality, workspace organization, and tab grouping capabilities.",
+      "target_audience": ["Power users who work with many browser tabs", "Productivity-focused professionals", "Students and researchers"],
+      "business_objectives": [
+        "Create Tabula as an open-source alternative to TabExtend",
+        "Improve user productivity through better tab management",
+        "Provide a seamless tab organization experience"
+      ],
+      "key_differentiators": [
+        "Open source and free",
+        "No user accounts required",
+        "Full offline functionality using IndexedDB",
+        "Smooth animations and modern UI"
+      ]
+    },
+    "technical_requirements": {
+      "technology_stack": {
+        "frontend": {
+          "framework": "React 18+",
+          "build_tool": "Vite",
+          "styling": "Tailwind CSS",
+          "ui_components": "shadcn/ui",
+          "animations": "Framer Motion",
+          "drag_drop": "react-dnd or @dnd-kit/core"
+        },
+        "storage": {
+          "primary": "IndexedDB",
+          "chrome_apis": "chrome.tabs, chrome.storage"
+        },
+        "monorepo_structure": {
+          "packages": {
+            "extension": "Chrome extension code",
+            "landing": "Landing page implementation"
+          }
+        }
+      },
+      "chrome_extension_config": {
+        "manifest_version": 3,
+        "permissions": [
+          "tabs",
+          "storage",
+          "activeTab"
+        ],
+        "chrome_url_overrides": {
+          "newtab": "index.html"
+        },
+        "content_security_policy": {
+          "extension_pages": "script-src 'self'; object-src 'self'"
+        }
+      },
+      "performance_requirements": {
+        "initial_load_time": "< 1 second",
+        "drag_drop_response": "< 100ms",
+        "workspace_switch_time": "< 500ms",
+        "tab_update_frequency": "Real-time on tab events"
+      }
+    },
+    "design_system": {
+      "typography": {
+        "font_family": "Inter",
+        "letter_spacing": "-4%",
+        "weights": {
+          "regular": 400,
+          "medium": 500,
+          "semibold": 600,
+          "bold": 700
+        }
+      },
+      "color_palette": {
+        "highlight": "#447EFC",
+        "black": "#232529",
+        "white": "#FCFDFF",
+        "white_v2": "#F4F8FF",
+        "border": "#E5E7EB",
+        "less_black": "#E5E7EB",
+        "barely_gray": "#9CA1AA"
+      },
+      "favicon_styling": {
+        "container": "Circular frame",
+        "padding": "5px all sides",
+        "border": "1px solid #E5E7EB",
+        "background": "transparent"
+      },
+      "animations": {
+        "easing": "cubic-bezier",
+        "library": "Framer Motion"
+      }
+    },
+    "functional_requirements": {
+      "core_features": [
+        {
+          "feature_id": "F001",
+          "name": "Recent Tabs Sidebar",
+          "description": "Collapsible sidebar showing currently open browser tabs",
+          "priority": "HIGH",
+          "user_stories": [
+            "As a user, I want to see all my currently open tabs in a sidebar so I can easily access them",
+            "As a user, I want the sidebar to collapse on hover-out showing only favicons to save screen space"
+          ],
+          "acceptance_criteria": [
+            "Sidebar fetches open tabs using Chrome tabs API",
+            "Sidebar shows tab title (truncated to 15 chars) and favicon",
+            "Sidebar collapses on hover-out to show only favicons with frames",
+            "Sidebar expands on hover-in to show full tab information",
+            "Real-time updates when tabs are opened/closed/switched"
+          ],
+          "technical_details": {
+            "chrome_api": "chrome.tabs.query, chrome.tabs.onUpdated, chrome.tabs.onCreated, chrome.tabs.onRemoved",
+            "collapsed_width": "60px",
+            "expanded_width": "280px"
+          }
+        },
+        {
+          "feature_id": "F002",
+          "name": "Canvas with Tab Groups",
+          "description": "Main area displaying tab groups with horizontal scrolling",
+          "priority": "HIGH",
+          "user_stories": [
+            "As a user, I want to see my tab groups on a canvas so I can organize my tabs visually",
+            "As a user, I want to scroll horizontally through my tab groups when they exceed screen width"
+          ],
+          "acceptance_criteria": [
+            "Canvas displays all tab groups for current workspace",
+            "Canvas is horizontally scrollable",
+            "Tab groups span full width of available space",
+            "Visual drop zones appear when dragging tabs"
+          ]
+        },
+        {
+          "feature_id": "F003",
+          "name": "Tab Groups",
+          "description": "Containers for organizing related tabs",
+          "priority": "HIGH",
+          "user_stories": [
+            "As a user, I want to create tab groups so I can organize related tabs together",
+            "As a user, I want to customize tab group names and icons"
+          ],
+          "acceptance_criteria": [
+            "Tab groups have editable headers with name and icon",
+            "Icons are selectable from Lucide React library",
+            "Tab count is displayed and clickable to open all tabs",
+            "Context menu appears on hover with sort/duplicate/delete/archive options",
+            "Groups can be archived or deleted",
+            "Drag and drop support for reordering tabs within groups"
+          ],
+          "context_menu_options": [
+            "Sort by alphabetical order",
+            "Sort by date added",
+            "Duplicate group",
+            "Delete group",
+            "Archive group"
+          ],
+          "tab_count_behavior": {
+            "display": "Shows total number of tabs in group",
+            "click_action": "Opens all tabs in the group",
+            "hover_tooltip": "Open all"
+          }
+        },
+        {
+          "feature_id": "F004",
+          "name": "Drag and Drop System",
+          "description": "Comprehensive drag and drop functionality",
+          "priority": "HIGH",
+          "user_stories": [
+            "As a user, I want to drag tabs from sidebar to groups to organize them",
+            "As a user, I want visual feedback when dragging to know where I can drop"
+          ],
+          "acceptance_criteria": [
+            "Tabs can be dragged from sidebar to existing groups",
+            "Tabs can be dragged from sidebar to canvas to create new groups",
+            "Tabs can be dragged between groups",
+            "Tabs can be reordered within groups",
+            "Visual line indicator shows drop zones",
+            "Drop zone highlighting for entire drop area"
+          ],
+          "drag_scenarios": [
+            "Recent tabs sidebar → existing tab group",
+            "Recent tabs sidebar → canvas (creates new group)",
+            "Tab from one group → another group",
+            "Tab within same group (reordering)",
+            "Tab from group → canvas (creates new group)"
+          ]
+        },
+        {
+          "feature_id": "F005",
+          "name": "Workspace Management",
+          "description": "Multiple workspace system for different contexts",
+          "priority": "MEDIUM",
+          "user_stories": [
+            "As a user, I want multiple workspaces so I can separate work and personal tabs",
+            "As a user, I want to switch between workspaces quickly"
+          ],
+          "acceptance_criteria": [
+            "Workspace bar at top of interface",
+            "Default workspace created on first use",
+            "Maximum 10 workspaces allowed",
+            "Workspace switching with slide animation",
+            "Auto-save workspace state on switch",
+            "Remember last active workspace on return"
+          ],
+          "workspace_limits": {
+            "max_workspaces": 10,
+            "default_workspace": "Workspace 1",
+            "naming": "User can rename workspaces"
+          }
+        },
+        {
+          "feature_id": "F006",
+          "name": "Tab Management",
+          "description": "Individual tab handling and display",
+          "priority": "HIGH",
+          "user_stories": [
+            "As a user, I want to click on tabs to open them in the current window",
+            "As a user, I want to see tab titles and favicons clearly"
+          ],
+          "acceptance_criteria": [
+            "Tab titles truncated to 15 characters",
+            "Favicons displayed in circular frames with 5px padding",
+            "Clicking tab opens URL in current tab (not new tab)",
+            "Tabs are draggable within and between groups",
+            "URL validation and cleanup for dead links"
+          ],
+          "tab_display": {
+            "title_truncation": "15 characters max",
+            "favicon_frame": "Circular with 5px padding and 1px border",
+            "click_behavior": "Open in current tab, replace extension"
+          }
+        },
+        {
+          "feature_id": "F007",
+          "name": "Data Persistence",
+          "description": "Local storage using IndexedDB",
+          "priority": "HIGH",
+          "user_stories": [
+            "As a user, I want my tab organization to persist between browser sessions",
+            "As a user, I want to recover accidentally deleted items"
+          ],
+          "acceptance_criteria": [
+            "All data stored in IndexedDB",
+            "Tab URLs, favicons, group names, workspace names stored",
+            "Tab order and group organization preserved",
+            "Recently deleted section with 14-day retention",
+            "Archive functionality for groups and tabs",
+            "State restoration on extension load"
+          ],
+          "indexeddb_schema": {
+            "workspaces": {
+              "fields": ["id", "name", "isDefault", "createdAt", "lastAccessed"],
+              "description": "Stores workspace information"
+            },
+            "tabGroups": {
+              "fields": ["id", "workspaceId", "name", "icon", "position", "isArchived", "createdAt"],
+              "description": "Stores tab group information"
+            },
+            "tabs": {
+              "fields": ["id", "groupId", "url", "title", "favicon", "position", "isArchived", "createdAt"],
+              "description": "Stores individual tab information"
+            },
+            "deletedItems": {
+              "fields": ["id", "type", "data", "deletedAt", "originalLocation"],
+              "description": "Stores deleted items for recovery"
+            }
+          }
+        },
+        {
+          "feature_id": "F008",
+          "name": "Archive and Delete System",
+          "description": "System for archiving and deleting tab groups and tabs",
+          "priority": "MEDIUM",
+          "user_stories": [
+            "As a user, I want to archive tab groups to hide them without losing them",
+            "As a user, I want to recover accidentally deleted items"
+          ],
+          "acceptance_criteria": [
+            "Archive functionality for individual tabs and entire groups",
+            "Archived items hidden from main canvas but stored in database",
+            "Recently deleted section accessible from settings/menu",
+            "14-day retention for deleted items before permanent deletion",
+            "Restore functionality for both archived and deleted items"
+          ],
+          "retention_policy": {
+            "archived_items": "Indefinite storage until user manually deletes",
+            "deleted_items": "14 days before permanent deletion",
+            "cleanup": "Automatic cleanup of old deleted items"
+          }
+        }
+      ],
+      "data_limits": {
+        "max_workspaces": 10,
+        "max_tabs_per_group": 500,
+        "max_total_tabs": 10000,
+        "deleted_items_retention": "14 days"
+      }
+    },
+    "user_interface_specifications": {
+      "layout": {
+        "recent_tabs_sidebar": {
+          "position": "left",
+          "collapsed_width": "60px",
+          "expanded_width": "280px",
+          "behavior": "collapse on hover-out, expand on hover-in",
+          "content_collapsed": "favicons with circular frames only",
+          "content_expanded": "favicon, truncated title (15 chars)"
+        },
+        "workspace_bar": {
+          "position": "top",
+          "height": "48px",
+          "max_tabs": 10,
+          "switching_animation": "slide-out transition"
+        },
+        "main_canvas": {
+          "position": "center-right area",
+          "scroll": "horizontal only",
+          "padding": "20px",
+          "tab_group_width": "full available width"
+        }
+      },
+      "tab_group_structure": {
+        "header": {
+          "components": ["editable name", "lucide react icon", "tab count"],
+          "icon_behavior": "double-click to change",
+          "name_behavior": "click to edit inline"
+        },
+        "body": {
+          "components": ["list of tabs with favicons and titles"],
+          "tab_display": "favicon in circular frame + truncated title"
+        },
+        "footer": {
+          "components": ["archive button", "delete button"],
+          "context_menu": "appears on hover with sort/duplicate/delete/archive options"
+        }
+      },
+      "interactions": {
+        "drag_feedback": {
+          "visual_indicator": "line highlighting entire drop area",
+          "drop_zones": "visual placeholders when dragging",
+          "animation": "smooth drag with framer motion"
+        },
+        "hover_states": {
+          "tab_group": "show context menu icon",
+          "tab_count": "show 'open all' tooltip",
+          "sidebar": "expand/collapse behavior"
+        },
+        "click_behaviors": {
+          "tab": "open URL in current tab (replace extension)",
+          "tab_count": "open all tabs in group",
+          "workspace_tab": "switch workspace with slide animation"
+        }
+      }
+    },
+    "non_functional_requirements": {
+      "performance": {
+        "initial_load": "< 1 second",
+        "drag_response": "< 100ms",
+        "workspace_switch": "< 500ms with animation",
+        "memory_usage": "optimized for large tab collections",
+        "real_time_updates": "immediate on Chrome tab events"
+      },
+      "usability": {
+        "drag_drop": "intuitive with clear visual feedback",
+        "responsive_design": "works on different screen sizes",
+        "accessibility": "keyboard navigation support",
+        "error_handling": "graceful degradation with user-friendly messages"
+      },
+      "reliability": {
+        "data_persistence": "robust IndexedDB operations with error handling",
+        "chrome_api_failures": "graceful handling of API limitations",
+        "state_recovery": "automatic recovery from corrupted data"
+      },
+      "security": {
+        "permissions": "minimal required Chrome permissions only",
+        "data_storage": "local IndexedDB only, no external requests",
+        "privacy": "no user tracking or analytics"
+      }
+    },
+    "technical_implementation_details": {
+      "chrome_api_usage": {
+        "required_permissions": [
+          "tabs - for reading current browser tabs",
+          "storage - for extension settings",
+          "activeTab - for current tab access"
+        ],
+        "api_methods": [
+          "chrome.tabs.query() - get all open tabs",
+          "chrome.tabs.onUpdated - listen for tab changes",
+          "chrome.tabs.onCreated - listen for new tabs",
+          "chrome.tabs.onRemoved - listen for closed tabs",
+          "chrome.tabs.update() - switch to tab when clicked"
+        ]
+      },
+      "state_management": {
+        "approach": "React Context API or simple component state",
+        "persistence": "IndexedDB for all user data",
+        "real_time_sync": "Chrome API event listeners",
+        "workspace_memory": "remember last active workspace"
+      },
+      "url_validation": {
+        "validation_rules": "check if URL is accessible and valid",
+        "cleanup_frequency": "periodic cleanup of dead links",
+        "error_handling": "mark invalid URLs and provide user options"
+      }
+    },
+    "development_phases": {
+      "phase_1_foundation": {
+        "name": "Chrome Extension Foundation",
+        "duration": "1 week",
+        "features": [
+          "Chrome extension boilerplate with Manifest V3",
+          "New tab override functionality",
+          "Basic React + Vite + Tailwind setup",
+          "IndexedDB connection and basic schema"
+        ],
+        "deliverables": [
+          "Working Chrome extension that overrides new tab",
+          "Basic React app structure",
+          "IndexedDB initialization"
+        ]
+      },
+      "phase_2_tab_integration": {
+        "name": "Chrome Tabs API Integration",
+        "duration": "1 week",
+        "features": [
+          "Recent tabs sidebar with Chrome API integration",
+          "Real-time tab updates (open/close/switch)",
+          "Basic tab display with favicons and titles",
+          "Sidebar collapse/expand functionality"
+        ],
+        "deliverables": [
+          "Functional recent tabs sidebar",
+          "Real-time tab synchronization",
+          "Responsive sidebar behavior"
+        ]
+      },
+      "phase_3_canvas_groups": {
+        "name": "Canvas and Tab Groups",
+        "duration": "2 weeks",
+        "features": [
+          "Main canvas with horizontal scrolling",
+          "Tab group creation and display",
+          "Editable group names and icons",
+          "Basic IndexedDB CRUD operations for groups"
+        ],
+        "deliverables": [
+          "Scrollable canvas layout",
+          "Functional tab groups with editable properties",
+          "Data persistence for groups"
+        ]
+      },
+      "phase_4_drag_drop": {
+        "name": "Drag and Drop System",
+        "duration": "2 weeks",
+        "features": [
+          "Complete drag and drop implementation",
+          "Visual feedback and drop zones",
+          "All drag scenarios (sidebar to group, group to group, etc.)",
+          "Tab reordering within groups"
+        ],
+        "deliverables": [
+          "Fully functional drag and drop system",
+          "Visual feedback during drag operations",
+          "Tab organization capabilities"
+        ]
+      },
+      "phase_5_workspaces": {
+        "name": "Workspace Management",
+        "duration": "1 week",
+        "features": [
+          "Workspace bar and switching",
+          "Multiple workspace support (max 10)",
+          "Workspace state persistence",
+          "Slide animation for workspace switching"
+        ],
+        "deliverables": [
+          "Multi-workspace functionality",
+          "Smooth workspace transitions",
+          "Persistent workspace states"
+        ]
+      },
+      "phase_6_advanced": {
+        "name": "Advanced Features",
+        "duration": "1.5 weeks",
+        "features": [
+          "Archive and delete system",
+          "Recently deleted with 14-day retention",
+          "Context menus for tab groups",
+          "URL validation and cleanup",
+          "Tab count click-to-open-all"
+        ],
+        "deliverables": [
+          "Complete archive/delete functionality",
+          "Context menus with all options",
+          "URL validation system"
+        ]
+      },
+      "phase_7_polish": {
+        "name": "Polish and Optimization",
+        "duration": "1 week",
+        "features": [
+          "Framer Motion animations with cubic-bezier",
+          "Performance optimization",
+          "Error handling and edge cases",
+          "Final UI polish and testing"
+        ],
+        "deliverables": [
+          "Smooth animations throughout",
+          "Optimized performance",
+          "Production-ready extension"
+        ]
+      }
+    },
+    "testing_strategy": {
+      "unit_tests": {
+        "focus_areas": [
+          "IndexedDB operations (CRUD)",
+          "Chrome API integration functions",
+          "Drag and drop logic",
+          "Data validation and sanitization",
+          "URL validation functions"
+        ]
+      },
+      "integration_tests": {
+        "focus_areas": [
+          "Chrome extension manifest and permissions",
+          "New tab override functionality",
+          "Real-time tab synchronization",
+          "Workspace switching and state persistence",
+          "Data flow between components"
+        ]
+      },
+      "user_acceptance_tests": {
+        "scenarios": [
+          "Complete tab management workflow",
+          "Workspace creation and switching",
+          "Drag and drop all scenarios",
+          "Archive and restore functionality",
+          "Data persistence across browser sessions"
+        ]
+      }
+    },
+    "deployment_and_distribution": {
+      "build_process": {
+        "tool": "Vite with Chrome extension optimizations",
+        "output": "Optimized bundle ready for Chrome Web Store",
+        "assets": "Icons, manifest.json, bundled JS/CSS"
+      },
+      "chrome_web_store": {
+        "submission_ready": "Package includes all required assets",
+        "permissions_justification": "Clear explanation of required permissions",
+        "privacy_policy": "Not required as no data collection"
+      },
+      "version_control": {
+        "versioning": "Semantic versioning (semver)",
+        "release_notes": "Detailed changelog for each version"
+      }
+    },
+    "success_metrics": {
+      "technical_metrics": [
+        "Extension load time < 1 second",
+        "Drag operation response < 100ms",
+        "Zero data loss during state transitions",
+        "Successful Chrome Web Store approval"
+      ],
+      "user_experience_metrics": [
+        "Intuitive drag and drop without user confusion",
+        "Smooth animations and transitions",
+        "Reliable data persistence",
+        "Positive user feedback on GitHub"
+      ]
+    }
+  }
+}

@@ -1,0 +1,43 @@
+# Task ID: 5
+# Title: Build Main Canvas with Horizontal Scrolling and Tab Group Drop Zones
+# Status: pending
+# Dependencies: 2, 3
+# Priority: high
+# Description: Create horizontally scrollable canvas area to display tab groups for the current workspace, with visual drop zones for drag-and-drop.
+# Details:
+Implement canvas with horizontal scroll and 20px padding. Render tab groups spanning full width. Add drop zones with visual feedback using Framer Motion for animation.
+
+# Test Strategy:
+Add multiple tab groups and verify horizontal scrolling. Drag tabs/groups and confirm drop zones appear and animate correctly.
+
+# Subtasks:
+## 1. Implement Horizontally Scrollable Canvas Container [pending]
+### Dependencies: None
+### Description: Create the main canvas area with horizontal scrolling and 20px padding to serve as the container for tab groups.
+### Details:
+Use a div styled with CSS properties such as 'overflow-x: auto', 'white-space: nowrap', and 'padding: 20px' to enable horizontal scrolling. Ensure the container stretches to the available width and supports smooth scrolling. Test with placeholder content to verify scroll behavior.
+
+## 2. Render Tab Groups Spanning Full Width [pending]
+### Dependencies: 5.1
+### Description: Display tab group components inside the canvas, ensuring each group spans the full available height and is arranged horizontally.
+### Details:
+Map over the tab groups for the current workspace and render each as a child of the scrollable container. Use 'display: inline-block' or a flex row layout to arrange groups horizontally. Ensure each group fills the vertical space and maintains consistent spacing.
+
+## 3. Integrate Drop Zones Between Tab Groups [pending]
+### Dependencies: 5.2
+### Description: Add drop zones between and around tab groups to support drag-and-drop operations.
+### Details:
+Insert drop zone components before, between, and after tab groups. Each drop zone should be a visible area that can accept drag events. Use react-dnd or @dnd-kit/core for drag-and-drop logic. Style drop zones to be visually distinct but unobtrusive when inactive.
+
+## 4. Add Visual Feedback and Animation to Drop Zones [pending]
+### Dependencies: 5.3
+### Description: Enhance drop zones with animated visual feedback using Framer Motion when a draggable item is hovered over them.
+### Details:
+Wrap drop zone components with Framer Motion elements. Animate properties such as scale, background color, or border when a draggable item is hovered. Ensure animations are smooth and reset when the drag leaves the drop zone.
+
+## 5. Wire Up Drag-and-Drop Logic for Tab Groups [pending]
+### Dependencies: 5.4
+### Description: Implement the logic to handle drag-and-drop of tab groups, updating their order and workspace state on drop.
+### Details:
+Use react-dnd or @dnd-kit/core to manage drag sources and drop targets. On drop, update the tab group order in state and persist changes if necessary. Ensure drop zones update dynamically based on drag state.
+

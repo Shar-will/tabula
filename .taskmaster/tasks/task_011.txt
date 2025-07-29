@@ -1,0 +1,43 @@
+# Task ID: 11
+# Title: Develop Archive and Delete System with Recently Deleted Section
+# Status: pending
+# Dependencies: 3, 6, 10
+# Priority: medium
+# Description: Implement archiving for tabs/groups and a recently deleted section with 14-day retention and restore functionality.
+# Details:
+Add archive buttons to tab/group UI. Move archived items to hidden state in IndexedDB. Implement recently deleted section accessible from settings/menu. Automatically purge items after 14 days. Allow restore of archived/deleted items.
+
+# Test Strategy:
+Archive/delete tabs/groups, verify they disappear from main UI and appear in archive/deleted section. Restore items and check data/state. Test 14-day retention logic.
+
+# Subtasks:
+## 1. Add Archive and Delete Actions to Tab/Group UI [pending]
+### Dependencies: None
+### Description: Integrate archive and delete buttons into the tab and group user interfaces, enabling users to initiate archiving or deletion directly from the UI.
+### Details:
+Update the tab and group components to include archive and delete buttons. Ensure these actions trigger appropriate handlers that initiate the archiving or deletion process. Use context menus or inline buttons as appropriate for the UI design. Ensure accessibility and visual feedback for action states.
+
+## 2. Implement Archiving Logic and Storage in IndexedDB [pending]
+### Dependencies: 11.1
+### Description: Develop the logic to move archived tabs/groups to a hidden state in IndexedDB, ensuring they are excluded from the main UI but retained for potential restoration.
+### Details:
+Extend the IndexedDB schema to support an 'archived' state for tabs and groups. Update data access logic to filter out archived items from the main display. Ensure archiving is atomic and does not result in data loss. Provide migration logic if schema changes are required.
+
+## 3. Develop Recently Deleted Section with 14-Day Retention [pending]
+### Dependencies: 11.2
+### Description: Create a 'Recently Deleted' section accessible from settings or the main menu, displaying deleted items with a 14-day retention period before permanent removal.
+### Details:
+Design and implement a UI section listing recently deleted tabs/groups, showing deletion timestamps and days remaining. Update deletion logic to move items to this section instead of immediate removal. Store deletion metadata in IndexedDB. Ensure the section is easily accessible and visually distinct.
+
+## 4. Implement Restore Functionality for Archived and Deleted Items [pending]
+### Dependencies: 11.2, 11.3
+### Description: Enable users to restore archived or recently deleted tabs/groups, returning them to their original state and location in the main UI.
+### Details:
+Add restore actions to both the archive and recently deleted sections. Implement logic to revert the archived/deleted state in IndexedDB and update the UI accordingly. Handle edge cases such as restoring to a non-existent group or conflicting tab IDs.
+
+## 5. Automate Purging of Items After 14-Day Retention [pending]
+### Dependencies: 11.3
+### Description: Implement background logic to automatically and permanently remove items from the Recently Deleted section after 14 days.
+### Details:
+Set up a scheduled background task or check on app startup to scan for and purge items older than 14 days from the Recently Deleted section in IndexedDB. Ensure this process is efficient and does not block the UI. Log or notify users if needed.
+

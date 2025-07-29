@@ -1,0 +1,43 @@
+# Task ID: 6
+# Title: Implement Tab Groups with Editable Headers and Context Menus
+# Status: pending
+# Dependencies: 5
+# Priority: high
+# Description: Develop tab group containers with editable names, Lucide React icons, tab count, and context menus for group actions.
+# Details:
+Allow inline editing of group names. Integrate Lucide React icon picker. Display tab count with click-to-open-all functionality. Add context menu with sort, duplicate, delete, and archive options. Support group archiving and deletion.
+
+# Test Strategy:
+Create, edit, and interact with tab groups. Open all tabs in group. Use context menu actions and verify correct behavior and persistence.
+
+# Subtasks:
+## 1. Render Tab Group Container with Editable Header [pending]
+### Dependencies: None
+### Description: Implement the tab group container UI, including an editable group name and display of the Lucide React icon.
+### Details:
+Create a TabGroup component that renders a container for each group. Add an input or inline editing mechanism for the group name, allowing users to click and edit the name directly. Integrate a Lucide React icon picker next to the name, enabling icon selection and display. Ensure accessibility by using appropriate ARIA roles and keyboard navigation for editing.
+
+## 2. Display Tab Count and Implement Open-All Functionality [pending]
+### Dependencies: 6.1
+### Description: Show the number of tabs in each group and allow users to open all tabs in the group with a single click.
+### Details:
+Add a tab count indicator to the TabGroup header. Implement a button or clickable area that, when activated, triggers the opening of all tabs in the group (e.g., via browser APIs or simulated navigation). Ensure the UI updates the count dynamically as tabs are added or removed.
+
+## 3. Implement Context Menu for Group Actions [pending]
+### Dependencies: 6.1
+### Description: Add a context menu to each tab group with options for sort, duplicate, delete, and archive.
+### Details:
+Integrate a right-click or menu button that opens a context menu for each group. Implement menu actions: sort (by name or custom order), duplicate (clone group and tabs), delete (remove group), and archive (move group to archived state). Use a menu library or custom implementation with keyboard and mouse support.
+
+## 4. Handle Group Archiving and Deletion Logic [pending]
+### Dependencies: 6.3
+### Description: Implement backend and UI logic for archiving and deleting tab groups, ensuring persistence and state updates.
+### Details:
+On archive, move the group to an archived state (e.g., separate list or hidden from main view). On delete, remove the group and its tabs from state and persistent storage. Ensure undo/restore options if required. Update UI to reflect changes immediately and persist updates using the data layer.
+
+## 5. Integrate State Management and Persistence for Tab Groups [pending]
+### Dependencies: 6.2, 6.4
+### Description: Connect tab group UI and actions to the application's state management and persistence layer.
+### Details:
+Wire up all tab group actions (edit name, icon, open all, context menu actions) to the application's state (e.g., React Context, Redux) and ensure changes are saved to persistent storage (e.g., IndexedDB). Implement listeners or hooks to update the UI in response to state changes and restore state on reload.
+
