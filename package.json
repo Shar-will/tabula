@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && npm run fix-build",
+    "fix-build": "[ -f dist/src/popup.html ] && mv dist/src/popup.html dist/popup.html; [ -d dist/src ] && rm -rf dist/src; [ -f dist/background.ts ] && rm -f dist/background.ts || true",
     "lint": "eslint .",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"
@@ -13,6 +13,7 @@
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",
     "@types/node": "^24.1.0",
+    "chrome": "^0.1.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.532.0",
@@ -28,6 +29,7 @@
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.6.0",
     "autoprefixer": "^10.4.21",
+    "chrome-types": "^0.1.365",
     "eslint": "^9.30.1",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",

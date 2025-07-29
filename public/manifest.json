@@ -2,27 +2,39 @@
     "manifest_version": 3,
     "name": "Tabula",
     "version": "1.0.0",
-    "description": "A chrome extension to manage your tabs",
-    "default_locale": "en",
+    "description": "A chrome extension to manage your bookmarks better.",
     "permissions": ["tabs", "storage", "activeTab"],
+    "content_security_policy": {
+        "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self';"
+    },
     "background": {
         "service_worker": "background.js"
     },
     "action": {
-        "default_popup": "popup.html",
+        "default_popup": "./popup.html",
         "default_icon": {
             "16": "assets/icon16.png",
+            "19": "assets/icon19.png",
+            "24": "assets/icon24.png",
+            "32": "assets/icon32.png",
+            "38": "assets/icon38.png",
             "48": "assets/icon48.png",
+            "64": "assets/icon64.png",
             "128": "assets/icon128.png"
         },
         "default_title": "Tabula"
     },
+    "icons": {
+            "16": "assets/icon16.png",
+            "19": "assets/icon19.png",
+            "24": "assets/icon24.png",
+            "32": "assets/icon32.png",
+            "38": "assets/icon38.png",
+            "48": "assets/icon48.png",
+            "64": "assets/icon64.png",
+            "128": "assets/icon128.png"
+        },
     "chrome_url_overrides": {
         "newtab": "index.html"
-    },
-    "icons": {
-        "16": "assets/icon16.png",
-        "48": "assets/icon48.png",
-        "128": "assets/icon128.png"
     }
 }

@@ -44,7 +44,7 @@
             "description": "Organize the project for Chrome Extension development, including `public`, `src`, and a Manifest V3-compliant `manifest.json`.",
             "dependencies": [],
             "details": "Create a `public/manifest.json` file with Manifest V3 fields: name, version, permissions, background service worker, and action popup. Organize `src` for popup, background, and content scripts. Ensure static files (icons, etc.) are in `public`. Reference the correct HTML and JS files in the manifest.",
-            "status": "in-progress",
+            "status": "done",
             "testStrategy": "Build the project, load the extension in Chrome (Developer Mode), and verify the extension appears with correct metadata and structure."
           },
           {
@@ -1056,7 +1056,7 @@
     ],
     "metadata": {
       "created": "2025-07-29T00:35:37.652Z",
-      "updated": "2025-07-29T02:45:29.809Z",
+      "updated": "2025-07-29T05:05:58.177Z",
       "description": "Tasks for master context"
     }
   }
