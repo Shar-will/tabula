@@ -10,6 +10,7 @@ export default defineConfig({
     //Allows us to load the extension on chrome.
     outDir: "dist",
     assetsDir: "assets",
+    cssCodeSplit: true,
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, "./index.html"), //entrypoints
@@ -29,6 +30,10 @@ export default defineConfig({
           // Don't hash icon files
           if (assetInfo.name && assetInfo.name.match(/\.(png|jpg|jpeg|gif|svg|ico)$/)) {
             return 'assets/[name].[ext]'
+          }
+
+          if (assetInfo.name?.endsWith('.css')) {
+            return 'assets/[name].[ext]';
           }
           return 'assets/[name]-[hash].[ext]'
         }

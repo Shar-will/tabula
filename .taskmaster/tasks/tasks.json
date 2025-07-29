@@ -53,7 +53,7 @@
             "description": "Add Framer Motion and react-dnd/@dnd-kit/core as dependencies, and verify their integration with the React project.",
             "dependencies": [],
             "details": "Install Framer Motion and either react-dnd or @dnd-kit/core via npm or bun. Add a sample animated component and a basic drag-and-drop example to the project. Ensure these libraries work with the existing React and Tailwind setup.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Render a test component using Framer Motion and a simple drag-and-drop interaction. Confirm both work as expected in the extension popup."
           }
         ]
@@ -76,7 +76,7 @@
             "description": "Create the manifest.json file specifying the extension's name, version, manifest_version (3), required permissions (tabs, storage, activeTab), background service worker, and new tab override.",
             "dependencies": [],
             "details": "Define the manifest.json structure according to Chrome Manifest V3 specification. Include fields: name, version, manifest_version: 3, permissions: [\"tabs\", \"storage\", \"activeTab\"], background with service_worker entry, and chrome_url_overrides for newtab. Ensure all required fields are present and valid.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Validate manifest.json using Chrome's extension loader. Confirm all fields are recognized and no errors are reported."
           },
           {
@@ -1056,7 +1056,7 @@
     ],
     "metadata": {
       "created": "2025-07-29T00:35:37.652Z",
-      "updated": "2025-07-29T05:05:58.177Z",
+      "updated": "2025-07-29T08:41:33.038Z",
       "description": "Tasks for master context"
     }
   }
