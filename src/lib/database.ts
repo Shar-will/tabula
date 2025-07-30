@@ -41,7 +41,7 @@ export interface DeletedItem {
 
 // DB Constants
 const DB_NAME = "TabulaDB";
-const DB_VERSION = 3; // Increment version
+const DB_VERSION = 4; // Increment version
 
 // Database Functions
 export async function getDatabase(): Promise<IDBDatabase> {
@@ -66,6 +66,17 @@ export async function getDatabase(): Promise<IDBDatabase> {
         if (db.objectStoreNames.contains("tabs")) {
           db.deleteObjectStore("tabs");
         }
+      }
+
+      // Create Workspaces Store
+      if (!db.objectStoreNames.contains("workspaces")) {
+        const workspaceStore = db.createObjectStore("workspaces", {
+          keyPath: "id",
+        });
+        workspaceStore.createIndex("name", "name", { unique: false });
+        workspaceStore.createIndex("isDefault", "isDefault", { unique: false });
+        workspaceStore.createIndex("createdAt", "createdAt", { unique: false });
+        workspaceStore.createIndex("lastAccessedAt", "lastAccessedAt", { unique: false });
       }
 
       // Create TabGroup Store with scoped position uniqueness
@@ -626,6 +637,230 @@ export async function getWorkSpaceCount(workspaceId: string): Promise<number> {
 
   } catch (error) {
     // Handle database connection errors
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+// ============================================================================
+// WORKSPACE CRUD OPERATIONS
+// ============================================================================
+
+/**
+ * Create a new workspace
+ * @param workspace - The workspace object to create
+ * @returns Promise<void>
+ */
+export async function createWorkspace(workspace: Workspace): Promise<void> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["workspaces"], "readwrite");
+      const store = transaction.objectStore("workspaces");
+      
+      const request = store.add(workspace);
+      
+      request.onsuccess = () => {
+        resolve();
+      };
+      
+      request.onerror = () => {
+        if (request.error?.name === "ConstraintError") {
+          reject(new Error(`Workspace with ID '${workspace.id}' already exists`));
+        } else {
+          reject(new Error(`Failed to create workspace: ${request.error?.message || 'Unknown error'}`));
+        }
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Get a workspace by ID
+ * @param id - The workspace ID
+ * @returns Promise<Workspace | null> - The workspace or null if not found
+ */
+export async function getWorkspace(id: string): Promise<Workspace | null> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["workspaces"], "readonly");
+      const store = transaction.objectStore("workspaces");
+      
+      const request = store.get(id);
+      
+      request.onsuccess = () => {
+        resolve(request.result || null);
+      };
+      
+      request.onerror = () => {
+        reject(new Error(`Failed to get workspace: ${request.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Get all workspaces
+ * @returns Promise<Workspace[]> - Array of all workspaces
+ */
+export async function getAllWorkspaces(): Promise<Workspace[]> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["workspaces"], "readonly");
+      const store = transaction.objectStore("workspaces");
+      
+      const request = store.getAll();
+      
+      request.onsuccess = () => {
+        resolve(request.result || []);
+      };
+      
+      request.onerror = () => {
+        reject(new Error(`Failed to get workspaces: ${request.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Update a workspace
+ * @param id - The workspace ID
+ * @param updates - Partial workspace object with fields to update
+ * @returns Promise<void>
+ */
+export async function updateWorkspace(id: string, updates: Partial<Workspace>): Promise<void> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["workspaces"], "readwrite");
+      const store = transaction.objectStore("workspaces");
+      
+      // First get the existing workspace
+      const getRequest = store.get(id);
+      
+      getRequest.onsuccess = () => {
+        const existingWorkspace = getRequest.result;
+        
+        if (!existingWorkspace) {
+          reject(new Error(`Workspace with ID '${id}' not found`));
+          return;
+        }
+        
+        // Merge existing workspace with updates
+        const updatedWorkspace: Workspace = {
+          ...existingWorkspace,
+          ...updates
+        };
+        
+        // Update the workspace
+        const updateRequest = store.put(updatedWorkspace);
+        
+        updateRequest.onsuccess = () => {
+          resolve();
+        };
+        
+        updateRequest.onerror = () => {
+          reject(new Error(`Failed to update workspace: ${updateRequest.error?.message || 'Unknown error'}`));
+        };
+      };
+      
+      getRequest.onerror = () => {
+        reject(new Error(`Failed to get workspace for update: ${getRequest.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Delete a workspace
+ * @param id - The workspace ID
+ * @returns Promise<void>
+ */
+export async function deleteWorkspace(id: string): Promise<void> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["workspaces"], "readwrite");
+      const store = transaction.objectStore("workspaces");
+      
+      const request = store.delete(id);
+      
+      request.onsuccess = () => {
+        resolve();
+      };
+      
+      request.onerror = () => {
+        reject(new Error(`Failed to delete workspace: ${request.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Get the default workspace
+ * @returns Promise<Workspace | null> - The default workspace or null if none exists
+ */
+export async function getDefaultWorkspace(): Promise<Workspace | null> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["workspaces"], "readonly");
+      const store = transaction.objectStore("workspaces");
+      
+      // Use the isDefault index to find the default workspace
+      const index = store.index("isDefault");
+      const request = index.get(IDBKeyRange.only(true));
+      
+      request.onsuccess = () => {
+        resolve(request.result || null);
+      };
+      
+      request.onerror = () => {
+        reject(new Error(`Failed to get default workspace: ${request.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
     throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
   }
 }
