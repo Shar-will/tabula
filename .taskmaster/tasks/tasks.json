@@ -121,7 +121,7 @@
               "2.4"
             ],
             "details": "Load the extension in Chrome (Developer Mode). Confirm manifest fields, permissions, CSP, new tab override, and entry points work as expected. Create a README or setup notes summarizing the boilerplate structure and usage.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Perform end-to-end manual testing of all features. Review documentation for completeness and clarity."
           }
         ]
@@ -1056,7 +1056,7 @@
     ],
     "metadata": {
       "created": "2025-07-29T00:35:37.652Z",
-      "updated": "2025-07-29T08:47:50.251Z",
+      "updated": "2025-07-29T08:51:57.546Z",
       "description": "Tasks for master context"
     }
   }
