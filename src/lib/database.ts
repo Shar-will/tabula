@@ -1235,3 +1235,465 @@ export async function unarchiveTabGroup(id: string): Promise<void> {
     throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
   }
 }
+
+// ============================================================================
+// TAB CRUD OPERATIONS
+// ============================================================================
+
+/**
+ * Create a new tab
+ * @param tab - The tab object to create
+ * @returns Promise<void>
+ */
+export async function createTab(tab: Tab): Promise<void> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["tabs"], "readwrite");
+      const store = transaction.objectStore("tabs");
+      
+      const request = store.add(tab);
+      
+      request.onsuccess = () => {
+        resolve();
+      };
+      
+      request.onerror = () => {
+        if (request.error?.name === "ConstraintError") {
+          reject(new Error(`Tab with ID '${tab.id}' already exists`));
+        } else {
+          reject(new Error(`Failed to create tab: ${request.error?.message || 'Unknown error'}`));
+        }
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Get a tab by ID
+ * @param id - The tab ID
+ * @returns Promise<Tab | null> - The tab or null if not found
+ */
+export async function getTab(id: string): Promise<Tab | null> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["tabs"], "readonly");
+      const store = transaction.objectStore("tabs");
+      
+      const request = store.get(id);
+      
+      request.onsuccess = () => {
+        resolve(request.result || null);
+      };
+      
+      request.onerror = () => {
+        reject(new Error(`Failed to get tab: ${request.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Get all tabs for a specific tab group
+ * @param groupId - The tab group ID
+ * @returns Promise<Tab[]> - Array of tabs in the group
+ */
+export async function getTabsByGroup(groupId: string): Promise<Tab[]> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["tabs"], "readonly");
+      const store = transaction.objectStore("tabs");
+      const index = store.index("groupId");
+      
+      const request = index.getAll(groupId);
+      
+      request.onsuccess = () => {
+        resolve(request.result || []);
+      };
+      
+      request.onerror = () => {
+        reject(new Error(`Failed to get tabs: ${request.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Get all tabs (across all groups)
+ * @returns Promise<Tab[]> - Array of all tabs
+ */
+export async function getAllTabs(): Promise<Tab[]> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["tabs"], "readonly");
+      const store = transaction.objectStore("tabs");
+      
+      const request = store.getAll();
+      
+      request.onsuccess = () => {
+        resolve(request.result || []);
+      };
+      
+      request.onerror = () => {
+        reject(new Error(`Failed to get tabs: ${request.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Update a tab
+ * @param id - The tab ID
+ * @param updates - Partial tab object with fields to update
+ * @returns Promise<void>
+ */
+export async function updateTab(id: string, updates: Partial<Tab>): Promise<void> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["tabs"], "readwrite");
+      const store = transaction.objectStore("tabs");
+      
+      // First get the existing tab
+      const getRequest = store.get(id);
+      
+      getRequest.onsuccess = () => {
+        const existingTab = getRequest.result;
+        
+        if (!existingTab) {
+          reject(new Error(`Tab with ID '${id}' not found`));
+          return;
+        }
+        
+        // Merge existing tab with updates
+        const updatedTab: Tab = {
+          ...existingTab,
+          ...updates
+        };
+        
+        // Update the tab
+        const updateRequest = store.put(updatedTab);
+        
+        updateRequest.onsuccess = () => {
+          resolve();
+        };
+        
+        updateRequest.onerror = () => {
+          reject(new Error(`Failed to update tab: ${updateRequest.error?.message || 'Unknown error'}`));
+        };
+      };
+      
+      getRequest.onerror = () => {
+        reject(new Error(`Failed to get tab for update: ${getRequest.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Delete a tab
+ * @param id - The tab ID
+ * @returns Promise<void>
+ */
+export async function deleteTab(id: string): Promise<void> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["tabs"], "readwrite");
+      const store = transaction.objectStore("tabs");
+      
+      const request = store.delete(id);
+      
+      request.onsuccess = () => {
+        resolve();
+      };
+      
+      request.onerror = () => {
+        reject(new Error(`Failed to delete tab: ${request.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Get active (non-archived) tabs for a tab group
+ * @param groupId - The tab group ID
+ * @returns Promise<Tab[]> - Array of active tabs
+ */
+export async function getActiveTabsByGroup(groupId: string): Promise<Tab[]> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["tabs"], "readonly");
+      const store = transaction.objectStore("tabs");
+      const index = store.index("groupId");
+      
+      const request = index.getAll(groupId);
+      
+      request.onsuccess = () => {
+        // Filter out archived tabs
+        const activeTabs = request.result.filter((tab: Tab) => !tab.isArchived);
+        resolve(activeTabs);
+      };
+      
+      request.onerror = () => {
+        reject(new Error(`Failed to get tabs: ${request.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Archive a tab (soft delete)
+ * @param id - The tab ID
+ * @returns Promise<void>
+ */
+export async function archiveTab(id: string): Promise<void> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["tabs"], "readwrite");
+      const store = transaction.objectStore("tabs");
+      
+      // First get the existing tab
+      const getRequest = store.get(id);
+      
+      getRequest.onsuccess = () => {
+        const existingTab = getRequest.result;
+        
+        if (!existingTab) {
+          reject(new Error(`Tab with ID '${id}' not found`));
+          return;
+        }
+        
+        // Mark as archived
+        const archivedTab: Tab = {
+          ...existingTab,
+          isArchived: true,
+          archivedAt: new Date()
+        };
+        
+        // Update the tab
+        const updateRequest = store.put(archivedTab);
+        
+        updateRequest.onsuccess = () => {
+          resolve();
+        };
+        
+        updateRequest.onerror = () => {
+          reject(new Error(`Failed to archive tab: ${updateRequest.error?.message || 'Unknown error'}`));
+        };
+      };
+      
+      getRequest.onerror = () => {
+        reject(new Error(`Failed to get tab for archiving: ${getRequest.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Unarchive a tab (restore from soft delete)
+ * @param id - The tab ID
+ * @returns Promise<void>
+ */
+export async function unarchiveTab(id: string): Promise<void> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["tabs"], "readwrite");
+      const store = transaction.objectStore("tabs");
+      
+      // First get the existing tab
+      const getRequest = store.get(id);
+      
+      getRequest.onsuccess = () => {
+        const existingTab = getRequest.result;
+        
+        if (!existingTab) {
+          reject(new Error(`Tab with ID '${id}' not found`));
+          return;
+        }
+        
+        // Mark as not archived
+        const unarchivedTab: Tab = {
+          ...existingTab,
+          isArchived: false,
+          archivedAt: undefined
+        };
+        
+        // Update the tab
+        const updateRequest = store.put(unarchivedTab);
+        
+        updateRequest.onsuccess = () => {
+          resolve();
+        };
+        
+        updateRequest.onerror = () => {
+          reject(new Error(`Failed to unarchive tab: ${updateRequest.error?.message || 'Unknown error'}`));
+        };
+      };
+      
+      getRequest.onerror = () => {
+        reject(new Error(`Failed to get tab for unarchiving: ${getRequest.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Search tabs by title or URL
+ * @param searchTerm - The search term to look for
+ * @param groupId - Optional: limit search to a specific group
+ * @returns Promise<Tab[]> - Array of matching tabs
+ */
+export async function searchTabs(searchTerm: string, groupId?: string): Promise<Tab[]> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["tabs"], "readonly");
+      const store = transaction.objectStore("tabs");
+      
+      // If groupId is provided, search within that group
+      if (groupId) {
+        const index = store.index("groupId");
+        const request = index.getAll(groupId);
+        
+        request.onsuccess = () => {
+          const tabs = request.result || [];
+          const matchingTabs = tabs.filter((tab: Tab) => 
+            tab.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            tab.url.toLowerCase().includes(searchTerm.toLowerCase())
+          );
+          resolve(matchingTabs);
+        };
+        
+        request.onerror = () => {
+          reject(new Error(`Failed to search tabs: ${request.error?.message || 'Unknown error'}`));
+        };
+      } else {
+        // Search across all tabs
+        const request = store.getAll();
+        
+        request.onsuccess = () => {
+          const tabs = request.result || [];
+          const matchingTabs = tabs.filter((tab: Tab) => 
+            tab.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            tab.url.toLowerCase().includes(searchTerm.toLowerCase())
+          );
+          resolve(matchingTabs);
+        };
+        
+        request.onerror = () => {
+          reject(new Error(`Failed to search tabs: ${request.error?.message || 'Unknown error'}`));
+        };
+      }
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Get tabs by URL (useful for finding duplicates)
+ * @param url - The URL to search for
+ * @returns Promise<Tab[]> - Array of tabs with matching URL
+ */
+export async function getTabsByUrl(url: string): Promise<Tab[]> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["tabs"], "readonly");
+      const store = transaction.objectStore("tabs");
+      const index = store.index("url");
+      
+      const request = index.getAll(url);
+      
+      request.onsuccess = () => {
+        resolve(request.result || []);
+      };
+      
+      request.onerror = () => {
+        reject(new Error(`Failed to get tabs by URL: ${request.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
