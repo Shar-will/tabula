@@ -1697,3 +1697,394 @@ export async function getTabsByUrl(url: string): Promise<Tab[]> {
     throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
   }
 }
+
+// ============================================================================
+// DELETED ITEM CRUD OPERATIONS
+// ============================================================================
+
+/**
+ * Create a new deleted item
+ * @param deletedItem - The deleted item object to create
+ * @returns Promise<void>
+ */
+export async function createDeletedItem(deletedItem: DeletedItem): Promise<void> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["deletedItems"], "readwrite");
+      const store = transaction.objectStore("deletedItems");
+      
+      const request = store.add(deletedItem);
+      
+      request.onsuccess = () => {
+        resolve();
+      };
+      
+      request.onerror = () => {
+        if (request.error?.name === "ConstraintError") {
+          reject(new Error(`Deleted item with ID '${deletedItem.id}' already exists`));
+        } else {
+          reject(new Error(`Failed to create deleted item: ${request.error?.message || 'Unknown error'}`));
+        }
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Get a deleted item by ID
+ * @param id - The deleted item ID
+ * @returns Promise<DeletedItem | null> - The deleted item or null if not found
+ */
+export async function getDeletedItem(id: string): Promise<DeletedItem | null> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["deletedItems"], "readonly");
+      const store = transaction.objectStore("deletedItems");
+      
+      const request = store.get(id);
+      
+      request.onsuccess = () => {
+        resolve(request.result || null);
+      };
+      
+      request.onerror = () => {
+        reject(new Error(`Failed to get deleted item: ${request.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Get all deleted items
+ * @returns Promise<DeletedItem[]> - Array of all deleted items
+ */
+export async function getAllDeletedItems(): Promise<DeletedItem[]> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["deletedItems"], "readonly");
+      const store = transaction.objectStore("deletedItems");
+      
+      const request = store.getAll();
+      
+      request.onsuccess = () => {
+        resolve(request.result || []);
+      };
+      
+      request.onerror = () => {
+        reject(new Error(`Failed to get deleted items: ${request.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Update a deleted item
+ * @param id - The deleted item ID
+ * @param updates - Partial deleted item object with fields to update
+ * @returns Promise<void>
+ */
+export async function updateDeletedItem(id: string, updates: Partial<DeletedItem>): Promise<void> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["deletedItems"], "readwrite");
+      const store = transaction.objectStore("deletedItems");
+      
+      // First get the existing deleted item
+      const getRequest = store.get(id);
+      
+      getRequest.onsuccess = () => {
+        const existingDeletedItem = getRequest.result;
+        
+        if (!existingDeletedItem) {
+          reject(new Error(`Deleted item with ID '${id}' not found`));
+          return;
+        }
+        
+        // Merge existing deleted item with updates
+        const updatedDeletedItem: DeletedItem = {
+          ...existingDeletedItem,
+          ...updates
+        };
+        
+        // Update the deleted item
+        const updateRequest = store.put(updatedDeletedItem);
+        
+        updateRequest.onsuccess = () => {
+          resolve();
+        };
+        
+        updateRequest.onerror = () => {
+          reject(new Error(`Failed to update deleted item: ${updateRequest.error?.message || 'Unknown error'}`));
+        };
+      };
+      
+      getRequest.onerror = () => {
+        reject(new Error(`Failed to get deleted item for update: ${getRequest.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Delete a deleted item (permanently remove from trash)
+ * @param id - The deleted item ID
+ * @returns Promise<void>
+ */
+export async function deleteDeletedItem(id: string): Promise<void> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["deletedItems"], "readwrite");
+      const store = transaction.objectStore("deletedItems");
+      
+      const request = store.delete(id);
+      
+      request.onsuccess = () => {
+        resolve();
+      };
+      
+      request.onerror = () => {
+        reject(new Error(`Failed to delete item: ${request.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Get deleted items by type
+ * @param type - The type of deleted items to retrieve
+ * @returns Promise<DeletedItem[]> - Array of deleted items of the specified type
+ */
+export async function getDeletedItemsByType(type: "tab" | "tabGroup" | "workspace"): Promise<DeletedItem[]> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["deletedItems"], "readonly");
+      const store = transaction.objectStore("deletedItems");
+      const index = store.index("type");
+      
+      const request = index.getAll(type);
+      
+      request.onsuccess = () => {
+        resolve(request.result || []);
+      };
+      
+      request.onerror = () => {
+        reject(new Error(`Failed to get deleted items by type: ${request.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Get deleted items by parent ID
+ * @param parentId - The parent ID to search for
+ * @returns Promise<DeletedItem[]> - Array of deleted items with the specified parent ID
+ */
+export async function getDeletedItemsByParentId(parentId: string): Promise<DeletedItem[]> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["deletedItems"], "readonly");
+      const store = transaction.objectStore("deletedItems");
+      const index = store.index("parentId");
+      
+      const request = index.getAll(parentId);
+      
+      request.onsuccess = () => {
+        resolve(request.result || []);
+      };
+      
+      request.onerror = () => {
+        reject(new Error(`Failed to get deleted items by parent ID: ${request.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Get deleted items within retention period (not expired)
+ * @returns Promise<DeletedItem[]> - Array of non-expired deleted items
+ */
+export async function getNonExpiredDeletedItems(): Promise<DeletedItem[]> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["deletedItems"], "readonly");
+      const store = transaction.objectStore("deletedItems");
+      
+      const request = store.getAll();
+      
+      request.onsuccess = () => {
+        const allItems = request.result || [];
+        const nonExpiredItems = allItems.filter(item => isWithinRetentionPeriod(item.deletedAt));
+        resolve(nonExpiredItems);
+      };
+      
+      request.onerror = () => {
+        reject(new Error(`Failed to get deleted items: ${request.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Get expired deleted items (beyond retention period)
+ * @returns Promise<DeletedItem[]> - Array of expired deleted items
+ */
+export async function getExpiredDeletedItems(): Promise<DeletedItem[]> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["deletedItems"], "readonly");
+      const store = transaction.objectStore("deletedItems");
+      
+      const request = store.getAll();
+      
+      request.onsuccess = () => {
+        const allItems = request.result || [];
+        const expiredItems = allItems.filter(item => !isWithinRetentionPeriod(item.deletedAt));
+        resolve(expiredItems);
+      };
+      
+      request.onerror = () => {
+        reject(new Error(`Failed to get deleted items: ${request.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Get deleted items sorted by deletion date (newest first)
+ * @returns Promise<DeletedItem[]> - Array of deleted items sorted by deletedAt
+ */
+export async function getDeletedItemsSortedByDate(): Promise<DeletedItem[]> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["deletedItems"], "readonly");
+      const store = transaction.objectStore("deletedItems");
+      
+      const request = store.getAll();
+      
+      request.onsuccess = () => {
+        const allItems = request.result || [];
+        const sortedItems = allItems.sort((a, b) => 
+          new Date(b.deletedAt).getTime() - new Date(a.deletedAt).getTime()
+        );
+        resolve(sortedItems);
+      };
+      
+      request.onerror = () => {
+        reject(new Error(`Failed to get deleted items: ${request.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Get count of deleted items by type
+ * @param type - The type to count
+ * @returns Promise<number> - Count of deleted items of the specified type
+ */
+export async function getDeletedItemCountByType(type: "tab" | "tabGroup" | "workspace"): Promise<number> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["deletedItems"], "readonly");
+      const store = transaction.objectStore("deletedItems");
+      const index = store.index("type");
+      
+      const request = index.count(type);
+      
+      request.onsuccess = () => {
+        resolve(request.result);
+      };
+      
+      request.onerror = () => {
+        reject(new Error(`Failed to count deleted items by type: ${request.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
