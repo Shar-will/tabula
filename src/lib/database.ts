@@ -864,3 +864,374 @@ export async function getDefaultWorkspace(): Promise<Workspace | null> {
     throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
   }
 }
+
+// ============================================================================
+// TAB GROUP CRUD OPERATIONS
+// ============================================================================
+
+/**
+ * Create a new tab group
+ * @param tabGroup - The tab group object to create
+ * @returns Promise<void>
+ */
+export async function createTabGroup(tabGroup: TabGroup): Promise<void> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["tabGroups"], "readwrite");
+      const store = transaction.objectStore("tabGroups");
+      
+      const request = store.add(tabGroup);
+      
+      request.onsuccess = () => {
+        resolve();
+      };
+      
+      request.onerror = () => {
+        if (request.error?.name === "ConstraintError") {
+          reject(new Error(`Tab group with ID '${tabGroup.id}' already exists`));
+        } else {
+          reject(new Error(`Failed to create tab group: ${request.error?.message || 'Unknown error'}`));
+        }
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Get a tab group by ID
+ * @param id - The tab group ID
+ * @returns Promise<TabGroup | null> - The tab group or null if not found
+ */
+export async function getTabGroup(id: string): Promise<TabGroup | null> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["tabGroups"], "readonly");
+      const store = transaction.objectStore("tabGroups");
+      
+      const request = store.get(id);
+      
+      request.onsuccess = () => {
+        resolve(request.result || null);
+      };
+      
+      request.onerror = () => {
+        reject(new Error(`Failed to get tab group: ${request.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Get all tab groups for a specific workspace
+ * @param workspaceId - The workspace ID
+ * @returns Promise<TabGroup[]> - Array of tab groups in the workspace
+ */
+export async function getTabGroupsByWorkspace(workspaceId: string): Promise<TabGroup[]> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["tabGroups"], "readonly");
+      const store = transaction.objectStore("tabGroups");
+      const index = store.index("workspaceId");
+      
+      const request = index.getAll(workspaceId);
+      
+      request.onsuccess = () => {
+        resolve(request.result || []);
+      };
+      
+      request.onerror = () => {
+        reject(new Error(`Failed to get tab groups: ${request.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Get all tab groups (across all workspaces)
+ * @returns Promise<TabGroup[]> - Array of all tab groups
+ */
+export async function getAllTabGroups(): Promise<TabGroup[]> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["tabGroups"], "readonly");
+      const store = transaction.objectStore("tabGroups");
+      
+      const request = store.getAll();
+      
+      request.onsuccess = () => {
+        resolve(request.result || []);
+      };
+      
+      request.onerror = () => {
+        reject(new Error(`Failed to get tab groups: ${request.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Update a tab group
+ * @param id - The tab group ID
+ * @param updates - Partial tab group object with fields to update
+ * @returns Promise<void>
+ */
+export async function updateTabGroup(id: string, updates: Partial<TabGroup>): Promise<void> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["tabGroups"], "readwrite");
+      const store = transaction.objectStore("tabGroups");
+      
+      // First get the existing tab group
+      const getRequest = store.get(id);
+      
+      getRequest.onsuccess = () => {
+        const existingTabGroup = getRequest.result;
+        
+        if (!existingTabGroup) {
+          reject(new Error(`Tab group with ID '${id}' not found`));
+          return;
+        }
+        
+        // Merge existing tab group with updates
+        const updatedTabGroup: TabGroup = {
+          ...existingTabGroup,
+          ...updates
+        };
+        
+        // Update the tab group
+        const updateRequest = store.put(updatedTabGroup);
+        
+        updateRequest.onsuccess = () => {
+          resolve();
+        };
+        
+        updateRequest.onerror = () => {
+          reject(new Error(`Failed to update tab group: ${updateRequest.error?.message || 'Unknown error'}`));
+        };
+      };
+      
+      getRequest.onerror = () => {
+        reject(new Error(`Failed to get tab group for update: ${getRequest.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Delete a tab group
+ * @param id - The tab group ID
+ * @returns Promise<void>
+ */
+export async function deleteTabGroup(id: string): Promise<void> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["tabGroups"], "readwrite");
+      const store = transaction.objectStore("tabGroups");
+      
+      const request = store.delete(id);
+      
+      request.onsuccess = () => {
+        resolve();
+      };
+      
+      request.onerror = () => {
+        reject(new Error(`Failed to delete tab group: ${request.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Get active (non-archived) tab groups for a workspace
+ * @param workspaceId - The workspace ID
+ * @returns Promise<TabGroup[]> - Array of active tab groups
+ */
+export async function getActiveTabGroupsByWorkspace(workspaceId: string): Promise<TabGroup[]> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["tabGroups"], "readonly");
+      const store = transaction.objectStore("tabGroups");
+      const index = store.index("workspaceId");
+      
+      const request = index.getAll(workspaceId);
+      
+      request.onsuccess = () => {
+        // Filter out archived tab groups
+        const activeGroups = request.result.filter((group: TabGroup) => !group.isArchived);
+        resolve(activeGroups);
+      };
+      
+      request.onerror = () => {
+        reject(new Error(`Failed to get tab groups: ${request.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Archive a tab group (soft delete)
+ * @param id - The tab group ID
+ * @returns Promise<void>
+ */
+export async function archiveTabGroup(id: string): Promise<void> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["tabGroups"], "readwrite");
+      const store = transaction.objectStore("tabGroups");
+      
+      // First get the existing tab group
+      const getRequest = store.get(id);
+      
+      getRequest.onsuccess = () => {
+        const existingTabGroup = getRequest.result;
+        
+        if (!existingTabGroup) {
+          reject(new Error(`Tab group with ID '${id}' not found`));
+          return;
+        }
+        
+        // Mark as archived
+        const archivedTabGroup: TabGroup = {
+          ...existingTabGroup,
+          isArchived: true,
+          archivedAt: new Date()
+        };
+        
+        // Update the tab group
+        const updateRequest = store.put(archivedTabGroup);
+        
+        updateRequest.onsuccess = () => {
+          resolve();
+        };
+        
+        updateRequest.onerror = () => {
+          reject(new Error(`Failed to archive tab group: ${updateRequest.error?.message || 'Unknown error'}`));
+        };
+      };
+      
+      getRequest.onerror = () => {
+        reject(new Error(`Failed to get tab group for archiving: ${getRequest.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+/**
+ * Unarchive a tab group (restore from soft delete)
+ * @param id - The tab group ID
+ * @returns Promise<void>
+ */
+export async function unarchiveTabGroup(id: string): Promise<void> {
+  try {
+    const db = await getDatabase();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["tabGroups"], "readwrite");
+      const store = transaction.objectStore("tabGroups");
+      
+      // First get the existing tab group
+      const getRequest = store.get(id);
+      
+      getRequest.onsuccess = () => {
+        const existingTabGroup = getRequest.result;
+        
+        if (!existingTabGroup) {
+          reject(new Error(`Tab group with ID '${id}' not found`));
+          return;
+        }
+        
+        // Mark as not archived
+        const unarchivedTabGroup: TabGroup = {
+          ...existingTabGroup,
+          isArchived: false,
+          archivedAt: undefined
+        };
+        
+        // Update the tab group
+        const updateRequest = store.put(unarchivedTabGroup);
+        
+        updateRequest.onsuccess = () => {
+          resolve();
+        };
+        
+        updateRequest.onerror = () => {
+          reject(new Error(`Failed to unarchive tab group: ${updateRequest.error?.message || 'Unknown error'}`));
+        };
+      };
+      
+      getRequest.onerror = () => {
+        reject(new Error(`Failed to get tab group for unarchiving: ${getRequest.error?.message || 'Unknown error'}`));
+      };
+      
+      transaction.onerror = () => {
+        reject(new Error(`Database transaction failed: ${transaction.error?.message || 'Unknown transaction error'}`));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
