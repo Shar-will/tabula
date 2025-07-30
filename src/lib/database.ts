@@ -54,71 +54,131 @@ export async function getDatabase(): Promise<IDBDatabase> {
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
       const oldVersion = event.oldVersion;
+      
+      // Fix: Check if transaction exists before using
+      const transaction = (event.target as IDBOpenDBRequest).transaction;
+      if (!transaction) {
+        throw new Error('Transaction is undefined in upgrade event. Database upgrade cannot proceed.');
+      }
 
-      // Handle migration from version 2 to 3
+      console.log(`🔄 Database upgrade: v${oldVersion} → v${DB_VERSION}`);
+
+      // --- v1 → v2: Add deletedItems store ---
+      if (oldVersion < 2) {
+        console.log('📦 Adding deletedItems store...');
+        createDeletedItemsStore(db);
+      }
+
+      // --- v2 → v3: Migrate tabGroups and tabs with data preservation ---
       if (oldVersion < 3) {
-        // Drop and recreate tabGroups store to remove global unique constraint
+        console.log('🔄 Migrating tabGroups and tabs stores with data preservation...');
+        
+        // Rename old stores to preserve data
         if (db.objectStoreNames.contains("tabGroups")) {
+          const oldStore = transaction.objectStore("tabGroups");
+          // Create a temporary store with old data
+          const tempStore = db.createObjectStore("tabGroups_old", { keyPath: "id" });
+          // Copy all indexes from old store
+          try {
+            Array.from(oldStore.indexNames).forEach(indexName => {
+              const index = oldStore.index(indexName);
+              tempStore.createIndex(indexName, index.keyPath, { unique: index.unique });
+            });
+          } catch (err) {
+            console.error('Error copying indexes from old store:', err);
+            throw err;
+          }
+          
+          // Copy data to temp store
+          const getAllRequest = oldStore.getAll();
+          getAllRequest.onsuccess = () => {
+            const data = getAllRequest.result || [];
+            const addPromises = data.map(item => {
+              return new Promise<void>((resolve, reject) => {
+                const addReq = tempStore.add(item);
+                addReq.onsuccess = () => resolve();
+                addReq.onerror = (e) => reject(e);
+              });
+            });
+            Promise.all(addPromises)
+              .then(() => {
+                db.deleteObjectStore("tabGroups");
+              })
+              .catch((err) => {
+                console.error("Error copying data before deleting old store:", err);
+              });
+          };
+          getAllRequest.onerror = (e) => {
+            console.error("Error reading data from old store:", e);
+          };
+          
+          // Delete old store
           db.deleteObjectStore("tabGroups");
         }
         
-        // Drop and recreate tabs store to add composite index
         if (db.objectStoreNames.contains("tabs")) {
+          const oldStore = transaction.objectStore("tabs");
+          // Create a temporary store with old data
+          const tempStore = db.createObjectStore("tabs_old", { keyPath: "id" });
+          // Copy all indexes from old store
+          try {
+            Array.from(oldStore.indexNames).forEach(indexName => {
+              const index = oldStore.index(indexName);
+              tempStore.createIndex(indexName, index.keyPath, { unique: index.unique });
+            });
+          } catch (err) {
+            console.error('Error copying indexes from old store:', err);
+            throw err;
+          }
+          
+          // Copy data to temp store
+          const getAllRequestTabs = oldStore.getAll();
+          getAllRequestTabs.onsuccess = () => {
+            const data = getAllRequestTabs.result || [];
+            const addPromises = data.map(item => {
+              return new Promise<void>((resolve, reject) => {
+                const addReq = tempStore.add(item);
+                addReq.onsuccess = () => resolve();
+                addReq.onerror = (e) => reject(e);
+              });
+            });
+            Promise.all(addPromises)
+              .then(() => {
+                db.deleteObjectStore("tabs");
+              })
+              .catch((err) => {
+                console.error("Error copying data before deleting old store:", err);
+              });
+          };
+          getAllRequestTabs.onerror = (e) => {
+            console.error("Error reading data from old store:", e);
+          };
+          
+          // Delete old store
           db.deleteObjectStore("tabs");
         }
+
+        // Create new stores with updated schema
+        createTabGroupsStore(db);
+        createTabsStore(db);
+        
+        // Migrate data from temp stores to new stores
+        migrateDataToNewStores(db, transaction);
       }
 
-      // Create Workspaces Store
-      if (!db.objectStoreNames.contains("workspaces")) {
-        const workspaceStore = db.createObjectStore("workspaces", {
-          keyPath: "id",
-        });
-        workspaceStore.createIndex("name", "name", { unique: false });
-        workspaceStore.createIndex("isDefault", "isDefault", { unique: false });
-        workspaceStore.createIndex("createdAt", "createdAt", { unique: false });
-        workspaceStore.createIndex("lastAccessedAt", "lastAccessedAt", { unique: false });
+      // --- v3 → v4: Add workspaces store ---
+      if (oldVersion < 4) {
+        console.log('📦 Adding workspaces store...');
+        createWorkspacesStore(db);
       }
 
-      // Create TabGroup Store with scoped position uniqueness
-      if (!db.objectStoreNames.contains("tabGroups")) {
-        const tabGroupStore = db.createObjectStore("tabGroups", {
-          keyPath: "id",
-        });
-        tabGroupStore.createIndex("workspaceId", "workspaceId", {
-          unique: false,
-        });
-        tabGroupStore.createIndex("name", "name", { unique: false });
-        tabGroupStore.createIndex("position", "position", { unique: false }); // Remove global unique
-        tabGroupStore.createIndex("workspaceId_position", ["workspaceId", "position"], { 
-          unique: true 
-        }); // Add composite unique index
-        tabGroupStore.createIndex("isArchived", "isArchived", {
-          unique: false,
-        });
-        tabGroupStore.createIndex("createdAt", "createdAt", { unique: false });
-      }
+      // --- Always ensure all stores exist (for new installs) ---
+      createWorkspacesStore(db);
+      createTabGroupsStore(db);
+      createTabsStore(db);
+      createDeletedItemsStore(db);
 
-      // Create Tab Store with scoped position uniqueness
-      if (!db.objectStoreNames.contains("tabs")) {
-        const tabStore = db.createObjectStore("tabs", { keyPath: "id" });
-        tabStore.createIndex("groupId", "groupId", { unique: false });
-        tabStore.createIndex("position", "position", { unique: false });
-        tabStore.createIndex("groupId_position", ["groupId", "position"], { 
-          unique: true 
-        }); // Add composite unique index
-        tabStore.createIndex("isArchived", "isArchived", { unique: false });
-        tabStore.createIndex("url", "url", { unique: false });
-        tabStore.createIndex("title", "title", { unique: false });
-        tabStore.createIndex("createdAt", "createdAt", { unique: false });
-      }
-
-      // Create Deleted Items Store
-      if (!db.objectStoreNames.contains("deletedItems")) {
-        const deletedItemStore = db.createObjectStore("deletedItems", { keyPath: "id" });
-        deletedItemStore.createIndex("type", "type", { unique: false });
-        deletedItemStore.createIndex("deletedAt", "deletedAt", { unique: false });
-        deletedItemStore.createIndex("parentId", "parentId", { unique: false });
-      }
+      console.log('✅ Database upgrade completed successfully');
     };
   });
 }
@@ -2086,5 +2146,252 @@ export async function getDeletedItemCountByType(type: "tab" | "tabGroup" | "work
     });
   } catch (error) {
     throw new Error(`Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown connection error'}`);
+  }
+}
+
+// ============================================================================
+// MIGRATION UTILITIES
+// ============================================================================
+
+/**
+ * Get the current database version
+ * @returns Promise<number> - Current database version
+ */
+export async function getDatabaseVersion(): Promise<number> {
+  try {
+    const db = await getDatabase();
+    return db.version;
+  } catch (error) {
+    throw new Error(`Failed to get database version: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Check if database needs migration
+ * @returns Promise<boolean> - True if migration is needed
+ */
+export async function needsMigration(): Promise<boolean> {
+  try {
+    const currentVersion = await getDatabaseVersion();
+    return currentVersion < DB_VERSION;
+  } catch (error) {
+    // If we can't get the version, assume migration is needed
+    return true;
+  }
+}
+
+/**
+ * Force database migration (useful for development)
+ * @returns Promise<void>
+ */
+export async function forceMigration(): Promise<void> {
+  try {
+    // Safety check: only allow in development
+    const env =
+      typeof process !== 'undefined' && process.env && process.env.NODE_ENV
+        ? process.env.NODE_ENV
+        : (typeof import.meta !== 'undefined' && (import.meta as any).env && (import.meta as any).env.MODE)
+          ? (import.meta as any).env.MODE
+          : (typeof window !== 'undefined' && (window as any).__ENV__ && (window as any).__ENV__.NODE_ENV)
+            ? (window as any).__ENV__.NODE_ENV
+            : 'production'; // default fallback
+    if (env === 'production') {
+      throw new Error('forceMigration is not allowed in production environment');
+    }
+    
+    console.log('🔄 Forcing database migration...');
+    console.warn('⚠️  WARNING: This will delete all data in the database!');
+
+    // Close existing connections
+    const db = await getDatabase();
+    db.close();
+    
+    // Delete the database to force recreation
+    const deleteRequest = indexedDB.deleteDatabase(DB_NAME);
+    
+    return new Promise((resolve, reject) => {
+      deleteRequest.onsuccess = () => {
+        console.log('️ Database deleted, will recreate on next access');
+        resolve();
+      };
+      
+      deleteRequest.onerror = () => {
+        reject(new Error('Failed to delete database for migration'));
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to force migration: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Validate database schema integrity
+ * @returns Promise<boolean> - True if schema is valid
+ */
+export async function validateSchema(): Promise<boolean> {
+  try {
+    const db = await getDatabase();
+    
+    // Check that all required stores exist
+    const requiredStores = ['workspaces', 'tabGroups', 'tabs', 'deletedItems'];
+    const existingStores = Array.from(db.objectStoreNames);
+    
+    for (const storeName of requiredStores) {
+      if (!existingStores.includes(storeName)) {
+        console.error(`❌ Missing required store: ${storeName}`);
+        return false;
+      }
+    }
+    
+    // Check that all required indexes exist
+    const requiredIndexes = {
+      workspaces: ['name', 'isDefault', 'createdAt', 'lastAccessedAt'],
+      tabGroups: ['workspaceId', 'name', 'position', 'workspaceId_position', 'isArchived', 'createdAt'],
+      tabs: ['groupId', 'position', 'groupId_position', 'isArchived', 'url', 'title', 'createdAt'],
+      deletedItems: ['type', 'deletedAt', 'parentId']
+    };
+    
+    for (const [storeName, indexes] of Object.entries(requiredIndexes)) {
+      const store = db.transaction([storeName], 'readonly').objectStore(storeName);
+      const existingIndexes = Array.from(store.indexNames);
+      
+      for (const indexName of indexes) {
+        if (!existingIndexes.includes(indexName)) {
+          console.error(`❌ Missing required index: ${storeName}.${indexName}`);
+          return false;
+        }
+      }
+    }
+    
+    console.log('✅ Database schema validation passed');
+    return true;
+  } catch (error) {
+    console.error('❌ Database schema validation failed:', error);
+    return false;
+  }
+}
+
+// ============================================================================
+// MIGRATION HELPER FUNCTIONS
+// ============================================================================
+
+/**
+ * Create workspaces store with all required indexes
+ */
+function createWorkspacesStore(db: IDBDatabase): void {
+  if (!db.objectStoreNames.contains("workspaces")) {
+    console.log('📦 Creating workspaces store...');
+    const workspaceStore = db.createObjectStore("workspaces", { keyPath: "id" });
+    workspaceStore.createIndex("name", "name", { unique: false });
+    workspaceStore.createIndex("isDefault", "isDefault", { unique: false });
+    workspaceStore.createIndex("createdAt", "createdAt", { unique: false });
+    workspaceStore.createIndex("lastAccessedAt", "lastAccessedAt", { unique: false });
+  }
+}
+
+/**
+ * Create tabGroups store with all required indexes
+ */
+function createTabGroupsStore(db: IDBDatabase): void {
+  if (!db.objectStoreNames.contains("tabGroups")) {
+    console.log('📦 Creating tabGroups store...');
+    const tabGroupStore = db.createObjectStore("tabGroups", { keyPath: "id" });
+    tabGroupStore.createIndex("workspaceId", "workspaceId", { unique: false });
+    tabGroupStore.createIndex("name", "name", { unique: false });
+    tabGroupStore.createIndex("position", "position", { unique: false });
+    tabGroupStore.createIndex("workspaceId_position", ["workspaceId", "position"], { unique: true });
+    tabGroupStore.createIndex("isArchived", "isArchived", { unique: false });
+    tabGroupStore.createIndex("createdAt", "createdAt", { unique: false });
+  }
+}
+
+/**
+ * Create tabs store with all required indexes
+ */
+function createTabsStore(db: IDBDatabase): void {
+  if (!db.objectStoreNames.contains("tabs")) {
+    console.log('📦 Creating tabs store...');
+    const tabStore = db.createObjectStore("tabs", { keyPath: "id" });
+    tabStore.createIndex("groupId", "groupId", { unique: false });
+    tabStore.createIndex("position", "position", { unique: false });
+    tabStore.createIndex("groupId_position", ["groupId", "position"], { unique: true });
+    tabStore.createIndex("isArchived", "isArchived", { unique: false });
+    tabStore.createIndex("url", "url", { unique: false });
+    tabStore.createIndex("title", "title", { unique: false });
+    tabStore.createIndex("createdAt", "createdAt", { unique: false });
+  }
+}
+
+/**
+ * Create deletedItems store with all required indexes
+ */
+function createDeletedItemsStore(db: IDBDatabase): void {
+  if (!db.objectStoreNames.contains("deletedItems")) {
+    console.log('📦 Creating deletedItems store...');
+    const deletedItemStore = db.createObjectStore("deletedItems", { keyPath: "id" });
+    deletedItemStore.createIndex("type", "type", { unique: false });
+    deletedItemStore.createIndex("deletedAt", "deletedAt", { unique: false });
+    deletedItemStore.createIndex("parentId", "parentId", { unique: false });
+  }
+}
+
+/**
+ * Migrate data from old stores to new stores with updated schema
+ */
+function migrateDataToNewStores(db: IDBDatabase, transaction: IDBTransaction): void {
+  // Migrate tabGroups data
+  if (db.objectStoreNames.contains("tabGroups_old")) {
+    console.log('🔄 Migrating tabGroups data...');
+    const oldStore = transaction.objectStore("tabGroups_old");
+    const newStore = transaction.objectStore("tabGroups");
+    
+    const request = oldStore.getAll();
+    request.onsuccess = () => {
+      const tabGroups = request.result || [];
+      console.log(`📊 Migrating ${tabGroups.length} tab groups...`);
+      
+      tabGroups.forEach((tabGroup: any) => {
+        // Ensure all required fields exist with defaults
+        const migratedTabGroup = {
+          ...tabGroup,
+          isArchived: tabGroup.isArchived ?? false,
+          createdAt: tabGroup.createdAt ?? new Date(),
+          archivedAt: tabGroup.archivedAt ?? undefined
+        };
+        newStore.add(migratedTabGroup);
+      });
+      
+      // Delete old store after migration
+      db.deleteObjectStore("tabGroups_old");
+      console.log('✅ TabGroups migration completed');
+    };
+  }
+  
+  // Migrate tabs data
+  if (db.objectStoreNames.contains("tabs_old")) {
+    console.log('🔄 Migrating tabs data...');
+    const oldStore = transaction.objectStore("tabs_old");
+    const newStore = transaction.objectStore("tabs");
+    
+    const request = oldStore.getAll();
+    request.onsuccess = () => {
+      const tabs = request.result || [];
+      console.log(`📊 Migrating ${tabs.length} tabs...`);
+      
+      tabs.forEach((tab: any) => {
+        // Ensure all required fields exist with defaults
+        const migratedTab = {
+          ...tab,
+          isArchived: tab.isArchived ?? false,
+          createdAt: tab.createdAt ?? new Date(),
+          archivedAt: tab.archivedAt ?? undefined
+        };
+        newStore.add(migratedTab);
+      });
+      
+      // Delete old store after migration
+      db.deleteObjectStore("tabs_old");
+      console.log('✅ Tabs migration completed');
+    };
   }
 }
